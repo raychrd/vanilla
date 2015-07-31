@@ -42,6 +42,7 @@ import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -188,9 +189,9 @@ public class LibraryActivity
 		pager.setOnPageChangeListener(pagerAdapter);
 
 		View controls = getLayoutInflater().inflate(R.layout.actionbar_controls, null);
-		mTitle = (TextView)controls.findViewById(R.id.title);
-		mArtist = (TextView)controls.findViewById(R.id.artist);
-		mCover = (ImageView)controls.findViewById(R.id.cover);
+		mTitle = (TextView)controls.findViewById(R.id.title);//顶栏歌曲标题
+		mArtist = (TextView)controls.findViewById(R.id.artist);//顶栏歌手
+		mCover = (ImageView)controls.findViewById(R.id.cover);//顶栏封面
 		controls.setOnClickListener(this);
 		mActionControls = controls;
 
@@ -240,6 +241,8 @@ public class LibraryActivity
 		SharedPreferences settings = PlaybackService.getSettings(this);
 		if (settings.getBoolean(PrefKeys.PLAYBACK_ON_STARTUP, false) && Intent.ACTION_MAIN.equals(intent.getAction())) {
 			startActivity(new Intent(this, FullPlaybackActivity.class));
+			//如果设置了开启应用时进入播放页面(settings->PLAYBACK_ON_STARTUP)并且是从LAUNCHER启动应用(Intent.ACTION_MAIN)
+			//就直接进入FullPlaybackActivity页面
 		}
 	}
 
@@ -249,6 +252,7 @@ public class LibraryActivity
 	 */
 	private void loadAlbumIntent(Intent intent)
 	{
+		//从Intent中获取专辑信息？
 		long albumId = intent.getLongExtra("albumId", -1);
 		if (albumId != -1) {
 			String[] fields = { intent.getStringExtra("artist"), intent.getStringExtra("album") };
@@ -266,16 +270,20 @@ public class LibraryActivity
 	@Override
 	public void onNewIntent(Intent intent)
 	{
+		//在Activity处于任务栈顶端时，也就是说之前打开过的Activity，现在处于onPause、onStop状态的话，
+		//其他应用再发送Intent的话，就会调用这个方法
 		if (intent == null)
 			return;
 
-		checkForLaunch(intent);
+		checkForLaunch(intent);//查看这个Intent是否是通过通知栏之类的地方发送
 		loadAlbumIntent(intent);
 	}
 
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event)
 	{
+		Log.i("ttt","onKeyUP");
+		//处理按键释放动作
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_BACK:
 			Limiter limiter = mPagerAdapter.getCurrentLimiter();
@@ -334,6 +342,8 @@ public class LibraryActivity
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event)
 	{
+		Log.i("ttt","onKeyDown");
+		//处理按键按下的动作
 		if (keyCode == KeyEvent.KEYCODE_DEL || keyCode == KeyEvent.KEYCODE_FORWARD_DEL)
 			// On ICS, EditText reports backspace events as unhandled despite
 			// actually handling them. To workaround, just assume the event was
@@ -349,9 +359,11 @@ public class LibraryActivity
 	/**
 	 * Update the first row of the lists with the appropriate action (play all
 	 * or enqueue all).
+	 * 用适当的动作更新列表的第一行（全部播放或全部加入列表）？
 	 */
 	private void updateHeaders()
 	{
+		Log.i("ttt","updateHeader");
 		int action = mDefaultAction;
 		if (action == ACTION_LAST_USED)
 			action = mLastAction;
@@ -369,6 +381,7 @@ public class LibraryActivity
 	 */
 	private void pickSongs(Intent intent, int action)
 	{
+		Log.i("ttt","pickSongs");
 		long id = intent.getLongExtra("id", LibraryAdapter.INVALID_ID);
 
 		boolean all = false;
@@ -406,6 +419,7 @@ public class LibraryActivity
 	 */
 	private void expand(Intent intent)
 	{
+		Log.i("ttt","expand");
 		int type = intent.getIntExtra("type", MediaUtils.TYPE_INVALID);
 		long id = intent.getLongExtra("id", LibraryAdapter.INVALID_ID);
 		int tab = mPagerAdapter.setLimiter(mPagerAdapter.mAdapters[type].buildLimiter(id));
@@ -421,6 +435,8 @@ public class LibraryActivity
 	 */
 	public void openPlaybackActivity()
 	{
+		Log.i("ttt","openPlaybackActivity");
+		//打开播放界面
 		startActivity(new Intent(this, FullPlaybackActivity.class));
 	}
 
@@ -429,8 +445,33 @@ public class LibraryActivity
 	 *
 	 * @param rowData The data for the row that was clicked.
 	 */
+//	public void onItemClicked(Intent rowData)
+//	{
+//		//点击歌曲
+//		int action = mDefaultAction;
+//		if (action == ACTION_LAST_USED)
+//			action = mLastAction;
+//
+//		if (action == ACTION_EXPAND && rowData.getBooleanExtra(LibraryAdapter.DATA_EXPANDABLE, false)) {
+//			onItemExpanded(rowData);
+//		} else if (rowData.getLongExtra(LibraryAdapter.DATA_ID, LibraryAdapter.INVALID_ID) == mLastActedId) {
+//			openPlaybackActivity();
+//		} else if (action != ACTION_DO_NOTHING) {
+//			if (action == ACTION_EXPAND) {
+//				// default to playing when trying to expand something that can't
+//				// be expanded
+//				action = ACTION_PLAY;
+//			} else if (action == ACTION_PLAY_OR_ENQUEUE) {
+//				//判断如果正在播放的话，就加入播放列表
+//				action = (mState & PlaybackService.FLAG_PLAYING) == 0 ? ACTION_PLAY : ACTION_ENQUEUE;
+//			}
+//			pickSongs(rowData, action);
+//		}
+//	}
+
 	public void onItemClicked(Intent rowData)
 	{
+		Log.i("ttt","itemclicked");
 		int action = mDefaultAction;
 		if (action == ACTION_LAST_USED)
 			action = mLastAction;
@@ -440,13 +481,12 @@ public class LibraryActivity
 		} else if (rowData.getLongExtra(LibraryAdapter.DATA_ID, LibraryAdapter.INVALID_ID) == mLastActedId) {
 			openPlaybackActivity();
 		} else if (action != ACTION_DO_NOTHING) {
-			if (action == ACTION_EXPAND) {
+			if (action == ACTION_EXPAND || action == ACTION_PLAY_OR_ENQUEUE) {
 				// default to playing when trying to expand something that can't
 				// be expanded
 				action = ACTION_PLAY;
-			} else if (action == ACTION_PLAY_OR_ENQUEUE) {
-				action = (mState & PlaybackService.FLAG_PLAYING) == 0 ? ACTION_PLAY : ACTION_ENQUEUE;
 			}
+
 			pickSongs(rowData, action);
 		}
 	}
@@ -655,15 +695,18 @@ public class LibraryActivity
 	 */
 	private void editPlaylist(Intent rowData)
 	{
+		//修改播放列表并且传了rowData love U~
 		Intent launch = new Intent(this, PlaylistActivity.class);
 		launch.putExtra("playlist", rowData.getLongExtra(LibraryAdapter.DATA_ID, LibraryAdapter.INVALID_ID));
 		launch.putExtra("title", rowData.getStringExtra(LibraryAdapter.DATA_TITLE));
+//		launch.putExtra("rowData", );
 		startActivity(launch);
 	}
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item)
 	{
+		//处理所有菜单点击事件
 		if (item.getGroupId() != 0)
 			return super.onContextItemSelected(item);
 

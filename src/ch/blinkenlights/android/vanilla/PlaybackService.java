@@ -405,10 +405,10 @@ public final class PlaybackService extends Service
 	public void onCreate()
 	{
 		HandlerThread thread = new HandlerThread("PlaybackService", Process.THREAD_PRIORITY_DEFAULT);
-		thread.start();
+		thread.start();//创建Handler对象
 
-		mTimeline = new SongTimeline(this);
-		mTimeline.setCallback(this);
+		mTimeline = new SongTimeline(this);//创建时间线对象
+		mTimeline.setCallback(this);//设置时间线对象监听
 		int state = loadState();
 
 		mPlayCounts = new PlayCountsHelper(this);
@@ -1413,6 +1413,7 @@ public final class PlaybackService extends Service
 	@Override
 	public boolean handleMessage(Message message)
 	{
+		//处理信息
 		switch (message.what) {
 		case CALL_GO:
 			if (message.arg1 == 0)
