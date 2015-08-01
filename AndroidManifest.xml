@@ -25,12 +25,13 @@ THE SOFTWARE.
 	package="ch.blinkenlights.android.vanilla"
 	android:versionName="1.0.20"
 	android:versionCode="1020"
-	android:installLocation="auto">
+	android:installLocation="internalOnly">
 	<uses-sdk android:minSdkVersion="15" android:targetSdkVersion="21" />
 	<uses-permission android:name="android.permission.WAKE_LOCK" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 	<!-- This is needed for isWiredHeadsetOn() to work in some cases. (bug?) -->
 	<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 	<application
 		android:icon="@drawable/icon"
 		android:label="@string/app_name">
@@ -123,6 +124,16 @@ THE SOFTWARE.
 				<action android:name="android.intent.action.MEDIA_BUTTON" />
 			</intent-filter>
 		</receiver>
+		<receiver android:enabled="true" android:exported="true"
+			android:name=".testServiceReceiver"
+			android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
+			android:installLocation="internalOnly">
+			<intent-filter>
+				<action android:name="android.intent.action.BOOT_COMPLETED" />
+				<action android:name="android.intent.action.QUICKBOOT_POWERON" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</receiver>
 		<service android:name="PlaybackService">
 			<intent-filter>
 				<action android:name="ch.blinkenlights.android.vanilla.action.PLAY" />
@@ -131,6 +142,14 @@ THE SOFTWARE.
 				<action android:name="ch.blinkenlights.android.vanilla.action.NEXT_SONG" />
 				<action android:name="ch.blinkenlights.android.vanilla.action.PREVIOUS_SONG" />
 			</intent-filter>
+		</service>
+		<service android:name="testService"
+			android:label="testService"
+			android:icon="@drawable/icon"
+			android:enabled="true"
+			android:exported="true"
+			android:process=":remote"
+			>
 		</service>
 		<activity
 			android:name="PreferencesActivity" />

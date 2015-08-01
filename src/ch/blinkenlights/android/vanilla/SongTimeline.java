@@ -91,6 +91,8 @@ public final class SongTimeline {
 	 *
 	 * @see SongTimeline#addSongs(Context, QueryTask)
 	 */
+
+	public static final int MODE_TIMER = 47;
 	public static final int MODE_PLAY = 0;
 	/**
 	 * Clear the queue and add the songs after the current song.

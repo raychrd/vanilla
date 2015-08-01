@@ -56,6 +56,7 @@ import android.os.Process;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
@@ -64,7 +65,11 @@ import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 /**
@@ -401,11 +406,18 @@ public final class PlaybackService extends Service
 	 */
 	private PlayCountsHelper mPlayCounts;
 
+	private QueryTask currentQueryTask = null;
+
+	private String nextTime = "";
+
+
 	@Override
 	public void onCreate()
 	{
 		HandlerThread thread = new HandlerThread("PlaybackService", Process.THREAD_PRIORITY_DEFAULT);
 		thread.start();//创建Handler对象
+
+
 
 		mTimeline = new SongTimeline(this);//创建时间线对象
 		mTimeline.setCallback(this);//设置时间线对象监听
@@ -458,6 +470,8 @@ public final class PlaybackService extends Service
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 		filter.addAction(Intent.ACTION_SCREEN_ON);
+		filter.addAction(Intent.ACTION_TIME_TICK);
+		filter.addAction("ch.ray");
 		registerReceiver(mReceiver, filter);
 
 		getContentResolver().registerContentObserver(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, true, mObserver);
@@ -480,6 +494,27 @@ public final class PlaybackService extends Service
 		mAccelFiltered = 0.0f;
 		mAccelLast = SensorManager.GRAVITY_EARTH;
 		setupSensor();
+
+//		createForeNotification()
+		final SimpleDateFormat sp = new SimpleDateFormat("mm");
+		TimerTask task = new TimerTask() {
+			@Override
+			public void run() {
+
+				Date date = new Date(System.currentTimeMillis());
+				Log.i("ttt","target "+nextTime+"timecheck"+" "+sp.format(date));
+				if (sp.format(date).equals(nextTime) && currentQueryTask != null){
+//					runQuery(currentQueryTask);
+					Intent intent = new Intent();
+					intent.setAction("ch.ray");
+					sendBroadcast(intent);
+					nextTime = null;
+				}
+			}
+		};
+
+		Timer timer = new Timer(true);
+		timer.schedule(task, 0, 1000);
 	}
 
 	@Override
@@ -935,8 +970,10 @@ public final class PlaybackService extends Service
 				if (mMediaPlayerInitialized)
 					mMediaPlayer.start();
 
-				if (mNotificationMode != NEVER)
+				if (mNotificationMode != NEVER) {
 					startForeground(NOTIFICATION_ID, createNotification(mCurrentSong, mState));
+//					createForeNotification();
+				}
 
 				mAudioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 
@@ -955,6 +992,7 @@ public final class PlaybackService extends Service
 					stopForeground(false);
 					mNotificationManager.notify(NOTIFICATION_ID, createNotification(mCurrentSong, mState));
 				} else {
+					Log.i("ttt","stop foreground");
 					stopForeground(true);
 				}
 
@@ -1350,6 +1388,8 @@ public final class PlaybackService extends Service
 					unsetFlag(FLAG_PLAYING);
 			} else if (Intent.ACTION_SCREEN_ON.equals(action)) {
 				userActionTriggered();
+			} else if ("ch.ray".equals(action)){
+				runQuery(currentQueryTask);
 			}
 		}
 	}
@@ -1630,6 +1670,20 @@ public final class PlaybackService extends Service
 	 */
 	public void runQuery(QueryTask query)
 	{
+		if (query.mode == SongTimeline.MODE_TIMER){
+			//处理定时事件
+			//发送粘滞广播倒计时->到时间了->再执行被暂缓的query
+			SimpleDateFormat sp = new SimpleDateFormat("mm");
+			Date date = new Date(System.currentTimeMillis());
+			String ttt = sp.format(date);
+			Integer a = Integer.parseInt(ttt)+1;
+			nextTime = a.toString();
+
+			Toast.makeText(this,"定时任务",Toast.LENGTH_SHORT).show();
+			query.mode = SongTimeline.MODE_PLAY;
+			currentQueryTask = query;
+			return;
+		}
 		int count = mTimeline.addSongs(this, query);
 
 		int text;
@@ -1927,6 +1981,14 @@ public final class PlaybackService extends Service
 	 * @param song The Song to display information about.
 	 * @param state The state. Determines whether to show paused or playing icon.
 	 */
+	public void createForeNotification() {
+		Notification notification = new Notification(R.drawable.icon,"守护进程", System.currentTimeMillis());
+		//PendingIntent pendingIntent = PendingIntent.getActivities(this,0,new Intent(this,LibraryActivity.class),0);
+		notification.setLatestEventInfo(this,"定时播放","将要播放的项目：",null);
+		startForeground(0x11,notification);
+
+	}
+
 	public Notification createNotification(Song song, int state)
 	{
 		boolean playing = (state & FLAG_PLAYING) != 0;
@@ -1977,7 +2039,7 @@ public final class PlaybackService extends Service
 
 		Notification notification = new Notification();
 		notification.contentView = views;
-		notification.icon = R.drawable.status_icon;
+		notification.icon = R.drawable.icon;
 		notification.flags |= Notification.FLAG_ONGOING_EVENT;
 		notification.contentIntent = mNotificationAction;
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
