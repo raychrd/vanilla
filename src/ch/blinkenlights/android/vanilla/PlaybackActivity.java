@@ -26,6 +26,7 @@ package ch.blinkenlights.android.vanilla;
 import java.io.File;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -40,6 +41,7 @@ import android.os.Message;
 import android.os.Process;
 import android.os.SystemClock;
 import android.os.Environment;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -349,11 +351,19 @@ public abstract class PlaybackActivity extends Activity
                 startActivity(new Intent(this, PreferencesActivity.class));
                 break;
             case 17:
-
+                //菜单按钮
 
                 AsyncPlayer sBeepPlayer = new AsyncPlayer("BeepPlayer");
                 Uri sBeepSound = Uri.parse("android.resource://ch.blinkenlights.android.vanilla/raw/beep");
                 sBeepPlayer.play(this, sBeepSound, false, AudioManager.STREAM_MUSIC);
+
+                AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+                int currentVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+                int targetVolume = (int) (currentVolume * 0.7);
+                audio.setStreamVolume(AudioManager.STREAM_MUSIC,targetVolume,0);
+
+                Log.i("volume",""+currentVolume);
+
                 break;
 
             case MENU_CLEAR_QUEUE:
@@ -437,7 +447,8 @@ public abstract class PlaybackActivity extends Activity
             count += Playlist.addToPlaylist(getContentResolver(), playlistTask.playlistId, playlistTask.audioIds);
         }
 
-        String message = getResources().getQuantityString(R.plurals.added_to_playlist, count, count, playlistTask.name);
+//        String message = getResources().getQuantityString(R.plurals.added_to_playlist, count, count, playlistTask.name);
+        String message = "已添加至播放列表";
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 

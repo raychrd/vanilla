@@ -530,6 +530,12 @@ public final class PlaybackService extends Service
 
 		Timer timer = new Timer(true);
 		timer.schedule(task, 0, 1000);
+
+		if (mCurrentSong != null) {
+			startForeground(NOTIFICATION_ID, createNotification(mCurrentSong, mState));
+
+		}
+
 	}
 
 	@Override
@@ -711,6 +717,7 @@ public final class PlaybackService extends Service
 		} else if (rg_result < 0.0f) {
 			rg_result = 0.0f;
 		}
+		//音量调节
 		mp.setVolume(rg_result, rg_result);
 	}
 
@@ -1004,11 +1011,11 @@ public final class PlaybackService extends Service
 					mMediaPlayer.pause();
 
 				if (mNotificationMode == ALWAYS || mForceNotificationVisible) {
-					stopForeground(false);
+//					stopForeground(false);
 					mNotificationManager.notify(NOTIFICATION_ID, createNotification(mCurrentSong, mState));
 				} else {
 					Log.i("ttt","stop foreground");
-					stopForeground(true);
+//					stopForeground(true);
 				}
 
 				// Delay entering deep sleep. This allows the headset
@@ -2013,13 +2020,6 @@ public final class PlaybackService extends Service
 	 * @param song The Song to display information about.
 	 * @param state The state. Determines whether to show paused or playing icon.
 	 */
-	public void createForeNotification() {
-		Notification notification = new Notification(R.drawable.icon,"守护进程", System.currentTimeMillis());
-		//PendingIntent pendingIntent = PendingIntent.getActivities(this,0,new Intent(this,LibraryActivity.class),0);
-		notification.setLatestEventInfo(this,"定时播放","将要播放的项目：",null);
-		startForeground(0x11,notification);
-
-	}
 
 	public Notification createNotification(Song song, int state)
 	{
