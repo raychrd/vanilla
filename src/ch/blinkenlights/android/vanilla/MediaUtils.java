@@ -85,6 +85,8 @@ public class MediaUtils {
 	 * The default sort order for media queries. First artist, then album, then
 	 * track number.
 	 */
+
+	public static final int TYPE_TIMER_LIST = 7;
 	public static final String DEFAULT_SORT = "artist_key,album_key,track";
 
 	/**

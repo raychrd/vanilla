@@ -65,12 +65,12 @@ public class LibraryPagerAdapter
 	 * MediaUtils ids, so e.g. TITLES[MediaUtils.TYPE_SONG] = R.string.songs
 	 */
 	public static final int[] TITLES = { R.string.artists, R.string.albums, R.string.songs,
-	                                     R.string.playlists, R.string.genres, R.string.files };
+	                                     R.string.playlists, R.string.genres, R.string.files ,R.string.time_task};
 	/**
 	 * Default tab order.
 	 */
 	public static final int[] DEFAULT_ORDER = { MediaUtils.TYPE_ARTIST, MediaUtils.TYPE_ALBUM, MediaUtils.TYPE_SONG,
-	                                            MediaUtils.TYPE_PLAYLIST, MediaUtils.TYPE_GENRE, MediaUtils.TYPE_FILE };
+	                                            MediaUtils.TYPE_PLAYLIST, MediaUtils.TYPE_GENRE, MediaUtils.TYPE_FILE,MediaUtils.TYPE_TIMER_LIST };
 	/**
 	 * The user-chosen tab order.
 	 */

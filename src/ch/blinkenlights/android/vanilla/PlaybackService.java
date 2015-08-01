@@ -410,6 +410,10 @@ public final class PlaybackService extends Service
 
 	private String nextTime = "";
 
+	private String nextTimeHour = "";
+
+	TimeTaskTimeline mTsakTimeline;
+
 
 	@Override
 	public void onCreate()
@@ -421,6 +425,11 @@ public final class PlaybackService extends Service
 
 		mTimeline = new SongTimeline(this);//创建时间线对象
 		mTimeline.setCallback(this);//设置时间线对象监听
+
+		mTsakTimeline = new TimeTaskTimeline();
+
+
+
 		int state = loadState();
 
 		mPlayCounts = new PlayCountsHelper(this);
@@ -472,6 +481,7 @@ public final class PlaybackService extends Service
 		filter.addAction(Intent.ACTION_SCREEN_ON);
 		filter.addAction(Intent.ACTION_TIME_TICK);
 		filter.addAction("ch.ray");
+		filter.addAction(TimeSetting.SEND_TIME_SETTING);
 		registerReceiver(mReceiver, filter);
 
 		getContentResolver().registerContentObserver(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, true, mObserver);
@@ -500,15 +510,20 @@ public final class PlaybackService extends Service
 		TimerTask task = new TimerTask() {
 			@Override
 			public void run() {
-
+//				Log.i("ttt","taskrun");
 				Date date = new Date(System.currentTimeMillis());
-				Log.i("ttt","target "+nextTime+"timecheck"+" "+sp.format(date));
-				if (sp.format(date).equals(nextTime) && currentQueryTask != null){
-//					runQuery(currentQueryTask);
-					Intent intent = new Intent();
-					intent.setAction("ch.ray");
-					sendBroadcast(intent);
-					nextTime = null;
+				if (mTsakTimeline != null) {
+//					Log.i("ttt","mtaskTimeline != null");
+					Log.i("ttt","size= "+mTsakTimeline.getSize());
+					if (mTsakTimeline.isEmpty() == false) {
+						Log.i("ttt","即将执行任务: "+mTsakTimeline.getFirstDate());
+						Date firstTimeTaskTime = mTsakTimeline.getFirstDate();
+						if (date.getMinutes() == firstTimeTaskTime.getMinutes()){
+							Intent intent = new Intent();
+							intent.setAction("ch.ray");
+							sendBroadcast(intent);
+						}
+					}
 				}
 			}
 		};
@@ -1389,7 +1404,25 @@ public final class PlaybackService extends Service
 			} else if (Intent.ACTION_SCREEN_ON.equals(action)) {
 				userActionTriggered();
 			} else if ("ch.ray".equals(action)){
-				runQuery(currentQueryTask);
+				runQuery(mTsakTimeline.getFirstQueryTask());
+				mTsakTimeline.removeFirstTimeTask();
+			} else if (TimeSetting.SEND_TIME_SETTING.equals(action)) {
+				//接收时间广播
+				int min = intent.getIntExtra("minute",61);
+				int hour = intent.getIntExtra("hour",25);
+
+				Date date = new Date(System.currentTimeMillis());
+				date.setHours(hour);
+				date.setMinutes(min);
+				date.setSeconds(0);
+
+				if (currentQueryTask != null) {
+					Log.i("ttt","addnewtask");
+					TimeTask tt = new TimeTask(date,currentQueryTask);
+					mTsakTimeline.add(tt);
+				}
+
+
 			}
 		}
 	}
@@ -1672,16 +1705,14 @@ public final class PlaybackService extends Service
 	{
 		if (query.mode == SongTimeline.MODE_TIMER){
 			//处理定时事件
-			//发送粘滞广播倒计时->到时间了->再执行被暂缓的query
-			SimpleDateFormat sp = new SimpleDateFormat("mm");
-			Date date = new Date(System.currentTimeMillis());
-			String ttt = sp.format(date);
-			Integer a = Integer.parseInt(ttt)+1;
-			nextTime = a.toString();
 
-			Toast.makeText(this,"定时任务",Toast.LENGTH_SHORT).show();
 			query.mode = SongTimeline.MODE_PLAY;
 			currentQueryTask = query;
+
+			Intent timeSettingIntent = new Intent();
+			timeSettingIntent.setClass(this,TimeSetting.class);
+			timeSettingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			startActivity(timeSettingIntent);
 			return;
 		}
 		int count = mTimeline.addSongs(this, query);
@@ -1823,12 +1854,13 @@ public final class PlaybackService extends Service
 	public static PlaybackService get(Context context)
 	{
 		if (sInstance == null) {
+			//1
 			context.startService(new Intent(context, PlaybackService.class));
-
+			//2
 			while (sInstance == null) {
 				try {
 					synchronized (sWait) {
-						sWait.wait();
+						sWait.wait(); //Object[] sWait = new Object[0]
 					}
 				} catch (InterruptedException ignored) {
 				}
