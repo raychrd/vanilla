@@ -19,7 +19,7 @@ import java.util.Map;
 public class TimeTaskListActivity extends ListActivity {
 //    PlaybackService mPlaybackService = null;
     TimeTaskTimeline mTimwTaskline = null;
-    SimpleDateFormat sp = new SimpleDateFormat("yyyy年MM月dd日hh时mm分");
+    SimpleDateFormat sp = new SimpleDateFormat("yyyy年MM月dd日HH时mm分");
 
 
     @Override

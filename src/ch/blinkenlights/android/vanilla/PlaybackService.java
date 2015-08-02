@@ -520,7 +520,7 @@ public final class PlaybackService extends Service
 					if (mTsakTimeline.isEmpty() == false) {
 						Log.i("ttt","即将执行任务: "+mTsakTimeline.getFirstDate());
 						Date firstTimeTaskTime = mTsakTimeline.getFirstDate();
-						if (date.getMinutes() == firstTimeTaskTime.getMinutes()){
+						if (date.getMinutes() == firstTimeTaskTime.getMinutes()&&date.getHours() == firstTimeTaskTime.getHours()){
 							Intent intent = new Intent();
 							intent.setAction("ch.ray");
 							sendBroadcast(intent);
@@ -1716,6 +1716,7 @@ public final class PlaybackService extends Service
 	{
 		if (query.mode == SongTimeline.MODE_TIMER){
 			//处理定时事件
+			Log.i("abcd","MODE_TIMER");
 
 			query.mode = SongTimeline.MODE_PLAY;
 			currentQueryTask = query;

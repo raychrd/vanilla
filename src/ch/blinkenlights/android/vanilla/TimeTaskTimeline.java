@@ -15,128 +15,13 @@ import java.util.ListIterator;
 public class TimeTaskTimeline {
     LinkedList<TimeTask> timeTaskList = null;
     TimeTaskTimeline(){
-        timeTaskList = new LinkedList<TimeTask>() {
-            @Override
-            public void add(int location, TimeTask object) {
-
-            }
-
-            @Override
-            public boolean add(TimeTask object) {
-                return false;
-            }
-
-            @Override
-            public boolean addAll(int location, Collection<? extends TimeTask> collection) {
-                return false;
-            }
-
-            @Override
-            public boolean addAll(Collection<? extends TimeTask> collection) {
-                return false;
-            }
-
-            @Override
-            public void clear() {
-
-            }
-
-            @Override
-            public boolean contains(Object object) {
-                return false;
-            }
-
-            @Override
-            public boolean containsAll(Collection<?> collection) {
-                return false;
-            }
-
-            @Override
-            public TimeTask get(int location) {
-                return null;
-            }
-
-            @Override
-            public int indexOf(Object object) {
-                return 0;
-            }
-
-            @Override
-            public boolean isEmpty() {
-                return false;
-            }
-
-            @Override
-            public Iterator<TimeTask> iterator() {
-                return null;
-            }
-
-            @Override
-            public int lastIndexOf(Object object) {
-                return 0;
-            }
-
-            @Override
-            public ListIterator<TimeTask> listIterator() {
-                return null;
-            }
-
-            @Override
-            public ListIterator<TimeTask> listIterator(int location) {
-                return null;
-            }
-
-            @Override
-            public TimeTask remove(int location) {
-                return null;
-            }
-
-            @Override
-            public boolean remove(Object object) {
-                return false;
-            }
-
-            @Override
-            public boolean removeAll(Collection<?> collection) {
-                return false;
-            }
-
-            @Override
-            public boolean retainAll(Collection<?> collection) {
-                return false;
-            }
-
-            @Override
-            public TimeTask set(int location, TimeTask object) {
-                return null;
-            }
-
-            @Override
-            public int size() {
-                return 0;
-            }
-
-            @Override
-            public List<TimeTask> subList(int start, int end) {
-                return null;
-            }
-
-            @Override
-            public Object[] toArray() {
-                return new Object[0];
-            }
-
-            @Override
-            public <T> T[] toArray(T[] array) {
-                return null;
-            }
-        };
+        timeTaskList = new LinkedList<TimeTask>();
     }
 
 
     public boolean add(TimeTask t) {
         if (timeTaskList.size() == 0) {
-            timeTaskList = new LinkedList<TimeTask>();
+//            timeTaskList = new LinkedList<TimeTask>();
             timeTaskList.addFirst(t);
             Log.i("timetasktimeline", "addfirst");
             return true;
@@ -154,8 +39,9 @@ public class TimeTaskTimeline {
                     return true;
                 }
             }
+            return false;
         }
-        return false;
+
     }
 
     boolean isEmpty() {
