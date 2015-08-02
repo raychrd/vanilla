@@ -414,6 +414,8 @@ public final class PlaybackService extends Service
 
 	TimeTaskTimeline mTsakTimeline;
 
+	public static TimeTaskTimeline staticTimeTaskTimeline;
+
 
 	@Override
 	public void onCreate()
@@ -1425,8 +1427,10 @@ public final class PlaybackService extends Service
 
 				if (currentQueryTask != null) {
 					Log.i("ttt","addnewtask");
-					TimeTask tt = new TimeTask(date,currentQueryTask);
+					TimeTask tt = new TimeTask(date,currentQueryTask,LibraryActivity.currentSelectedItemName);
 					mTsakTimeline.add(tt);
+
+					staticTimeTaskTimeline = mTsakTimeline;
 				}
 
 
@@ -1875,6 +1879,14 @@ public final class PlaybackService extends Service
 		}
 
 		return sInstance;
+	}
+
+	public static TimeTaskTimeline get() {
+		//here
+		if (staticTimeTaskTimeline != null) {
+			return staticTimeTaskTimeline;
+		}
+		return null;
 	}
 
 	/**

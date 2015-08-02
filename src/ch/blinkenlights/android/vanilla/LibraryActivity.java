@@ -168,6 +168,8 @@ public class LibraryActivity
      */
     private LibraryAdapter mCurrentAdapter;
 
+    public static String currentSelectedItemName;
+
 
     @Override
     public void onCreate(Bundle state) {
@@ -659,6 +661,8 @@ public class LibraryActivity
             int type = rowData.getIntExtra(LibraryAdapter.DATA_TYPE, MediaUtils.TYPE_INVALID);
 
             menu.setHeaderTitle(rowData.getStringExtra(LibraryAdapter.DATA_TITLE));
+            //获取歌曲名字
+            currentSelectedItemName = rowData.getStringExtra(LibraryAdapter.DATA_TITLE);
             if (type == MediaUtils.TYPE_PLAYLIST || type == MediaUtils.TYPE_ALBUM || type == MediaUtils.TYPE_SONG) {
                 menu.add(0, MENU_TIMER, 0, "设置定时播放").setIntent(rowData);
             }

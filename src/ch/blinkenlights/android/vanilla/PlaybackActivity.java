@@ -352,17 +352,18 @@ public abstract class PlaybackActivity extends Activity
                 break;
             case 17:
                 //菜单按钮
-
-                AsyncPlayer sBeepPlayer = new AsyncPlayer("BeepPlayer");
-                Uri sBeepSound = Uri.parse("android.resource://ch.blinkenlights.android.vanilla/raw/beep");
-                sBeepPlayer.play(this, sBeepSound, false, AudioManager.STREAM_MUSIC);
-
-                AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-                int currentVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
-                int targetVolume = (int) (currentVolume * 0.7);
-                audio.setStreamVolume(AudioManager.STREAM_MUSIC,targetVolume,0);
-
-                Log.i("volume",""+currentVolume);
+//
+//                AsyncPlayer sBeepPlayer = new AsyncPlayer("BeepPlayer");
+//                Uri sBeepSound = Uri.parse("android.resource://ch.blinkenlights.android.vanilla/raw/beep");
+//                sBeepPlayer.play(this, sBeepSound, false, AudioManager.STREAM_MUSIC);
+//
+//                AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+//                int currentVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+//                int targetVolume = (int) (currentVolume * 0.7);
+//                audio.setStreamVolume(AudioManager.STREAM_MUSIC,targetVolume,0);
+//
+//                Log.i("volume",""+currentVolume);
+                startActivity(new Intent(this,TimeTaskListActivity.class));
 
                 break;
 

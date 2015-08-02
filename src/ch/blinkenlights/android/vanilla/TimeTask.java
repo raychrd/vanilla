@@ -9,11 +9,13 @@ import java.util.Date;
 public class TimeTask implements Comparable<Object> {
     public Date date;
     public QueryTask queryTask;
+    public String title;
 
     TimeTask(){}
-    TimeTask(Date d,QueryTask q){
+    TimeTask(Date d,QueryTask q,String t){
         date = d;
         queryTask = q;
+        title = t;
     }
 
     @Override
