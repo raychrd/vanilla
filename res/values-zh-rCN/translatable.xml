@@ -56,13 +56,13 @@
     <string name="clear_search">清除搜索</string>
     <string name="play_or_enqueue">若正在播放则加入播放列表；若暂停则播放</string>
     <plurals name="playing">
-        <item quantity="other">正在播放 %d。</item>
+        <item quantity="other">正在播放 %d</item>
     </plurals>
     <plurals name="enqueued">
         <item quantity="other">加入播放列表 %d</item>
     </plurals>
     <plurals name="added_to_playlist">
-        <item quantity="other">%1$ d 歌曲已加入播放列表 %2$ s。</item>
+        <item quantity="other">%1$ d 歌曲已加入播放列表 %2$ s</item>
     </plurals>
     <plurals name="deleted">
         <item quantity="other">已删除歌曲 %d</item>
