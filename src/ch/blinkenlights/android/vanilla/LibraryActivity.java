@@ -52,6 +52,8 @@ import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
@@ -180,6 +182,14 @@ public class LibraryActivity
             checkForLaunch(getIntent());
         }
 
+        SharedPreferences prefs = PlaybackService.getSettings(this);
+        Window window = getWindow();
+        Log.i("status",""+prefs.getBoolean(PrefKeys.DISABLE_LOCKSCREEN, false));
+
+        if (prefs.getBoolean(PrefKeys.DISABLE_LOCKSCREEN, false))
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         setContentView(R.layout.library_content);
 
         mLimiterScroller = (HorizontalScrollView) findViewById(R.id.limiter_scroller);
@@ -225,6 +235,8 @@ public class LibraryActivity
         mDefaultAction = Integer.parseInt(settings.getString(PrefKeys.DEFAULT_ACTION_INT, "7"));
         mLastActedId = LibraryAdapter.INVALID_ID;
         updateHeaders();
+
+
     }
 
     /**
@@ -383,7 +395,6 @@ public class LibraryActivity
         boolean all = false;
         int mode = action;
         if (action == ACTION_PLAY_ALL || action == ACTION_ENQUEUE_ALL) {
-            Log.i("ttt","playall");
             int type = mCurrentAdapter.getMediaType();
             boolean notPlayAllAdapter = type > MediaUtils.TYPE_SONG || id == LibraryAdapter.HEADER_ID;
             if (mode == ACTION_ENQUEUE_ALL && notPlayAllAdapter) {
@@ -440,49 +451,49 @@ public class LibraryActivity
      *
      * @param rowData The data for the row that was clicked.
      */
-//	public void onItemClicked(Intent rowData)
-//	{
-//		//点击歌曲
-//		int action = mDefaultAction;
-//		if (action == ACTION_LAST_USED)
-//			action = mLastAction;
+	public void onItemClicked(Intent rowData)
+	{
+		//点击歌曲
+		int action = mDefaultAction;
+		if (action == ACTION_LAST_USED)
+			action = mLastAction;
+
+		if (action == ACTION_EXPAND && rowData.getBooleanExtra(LibraryAdapter.DATA_EXPANDABLE, false)) {
+			onItemExpanded(rowData);
+		} else if (rowData.getLongExtra(LibraryAdapter.DATA_ID, LibraryAdapter.INVALID_ID) == mLastActedId) {
+			openPlaybackActivity();
+		} else if (action != ACTION_DO_NOTHING) {
+			if (action == ACTION_EXPAND) {
+				// default to playing when trying to expand something that can't
+				// be expanded
+				action = ACTION_PLAY;
+			} else if (action == ACTION_PLAY_OR_ENQUEUE) {
+				//判断如果正在播放的话，就加入播放列表
+				action = (mState & PlaybackService.FLAG_PLAYING) == 0 ? ACTION_PLAY : ACTION_ENQUEUE;
+			}
+			pickSongs(rowData, action);
+		}
+	}
+//    public void onItemClicked(Intent rowData) {
+//        Log.i("ttt", "itemclicked");
+//        int action = mDefaultAction;
+//        if (action == ACTION_LAST_USED)
+//            action = mLastAction;
 //
-//		if (action == ACTION_EXPAND && rowData.getBooleanExtra(LibraryAdapter.DATA_EXPANDABLE, false)) {
-//			onItemExpanded(rowData);
-//		} else if (rowData.getLongExtra(LibraryAdapter.DATA_ID, LibraryAdapter.INVALID_ID) == mLastActedId) {
-//			openPlaybackActivity();
-//		} else if (action != ACTION_DO_NOTHING) {
-//			if (action == ACTION_EXPAND) {
-//				// default to playing when trying to expand something that can't
-//				// be expanded
-//				action = ACTION_PLAY;
-//			} else if (action == ACTION_PLAY_OR_ENQUEUE) {
-//				//判断如果正在播放的话，就加入播放列表
-//				action = (mState & PlaybackService.FLAG_PLAYING) == 0 ? ACTION_PLAY : ACTION_ENQUEUE;
-//			}
-//			pickSongs(rowData, action);
-//		}
-//	}
-    public void onItemClicked(Intent rowData) {
-        Log.i("ttt", "itemclicked");
-        int action = mDefaultAction;
-        if (action == ACTION_LAST_USED)
-            action = mLastAction;
-
-        if (action == ACTION_EXPAND && rowData.getBooleanExtra(LibraryAdapter.DATA_EXPANDABLE, false)) {
-            onItemExpanded(rowData);
-        } else if (rowData.getLongExtra(LibraryAdapter.DATA_ID, LibraryAdapter.INVALID_ID) == mLastActedId) {
-            openPlaybackActivity();
-        } else if (action != ACTION_DO_NOTHING) {
-            if (action == ACTION_EXPAND || action == ACTION_PLAY_OR_ENQUEUE) {
-                // default to playing when trying to expand something that can't
-                // be expanded
-                action = ACTION_PLAY;
-            }
-
-            pickSongs(rowData, action);
-        }
-    }
+//        if (action == ACTION_EXPAND && rowData.getBooleanExtra(LibraryAdapter.DATA_EXPANDABLE, false)) {
+//            onItemExpanded(rowData);
+//        } else if (rowData.getLongExtra(LibraryAdapter.DATA_ID, LibraryAdapter.INVALID_ID) == mLastActedId) {
+//            openPlaybackActivity();
+//        } else if (action != ACTION_DO_NOTHING) {
+//            if (action == ACTION_EXPAND || action == ACTION_PLAY_OR_ENQUEUE) {
+//                // default to playing when trying to expand something that can't
+//                // be expanded
+//                action = ACTION_PLAY;
+//            }
+//
+//            pickSongs(rowData, action);
+//        }
+//    }
 
     /**
      * Called by LibraryAdapters when a row's expand arrow has been clicked.

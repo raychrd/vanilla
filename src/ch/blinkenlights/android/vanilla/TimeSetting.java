@@ -11,12 +11,16 @@ import android.widget.Button;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.util.Date;
+
 /**
  * Created by Ray on 15/8/1.
  */
 public class TimeSetting extends Activity {
-    public static String SEND_TIME_SETTING = "ch.ray.sendtime";
+    public static String SEND_TIME_SETTING = "senddatesetting";
+    public static String EDIT_TIME_SETTING = "editdatesetting";
     TimePicker timePicker;
+    Date now;
     Button button;
     int hours;
     int minutes;
@@ -26,8 +30,14 @@ public class TimeSetting extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.time_setting);
 
+        now = new Date(System.currentTimeMillis());
+        now.setSeconds(0);
+
+
         timePicker = (TimePicker) findViewById(R.id.timePicker);
         button = (Button) findViewById(R.id.button_start_timer);
+        hours = now.getHours();
+        minutes = now.getMinutes();
 
         timePicker.setIs24HourView(true);
         timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
@@ -38,18 +48,64 @@ public class TimeSetting extends Activity {
             }
         });
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setAction(SEND_TIME_SETTING);
-                intent.putExtra("hour", hours);
-                intent.putExtra("minute", minutes);
-                sendBroadcast(intent);
-                Toast.makeText(TimeSetting.this,"设置成功",Toast.LENGTH_SHORT).show();
-                finish();
-            }
-        });
+        int mode = getIntent().getIntExtra("mode",0);
+        switch (mode) {
+            case TimeTask.TIMETASK_MODE_EDIT:
+                button.setText("修改");
+                final int itemNumber = getIntent().getIntExtra("number",-2);
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //待修改
+                        if ((hours < now.getHours()) || (hours == now.getHours() && minutes < now.getMinutes())) {
+                            Toast.makeText(TimeSetting.this,"设定时间不能早于当前时间",Toast.LENGTH_SHORT).show();
+                        } else {
+                            Intent intent = new Intent();
+                            intent.setAction(SEND_TIME_SETTING);
+                            intent.putExtra("hour", hours);
+                            intent.putExtra("minute", minutes);
+                            intent.putExtra("number",itemNumber);
+                            intent.setAction(EDIT_TIME_SETTING);
+                            sendBroadcast(intent);
+//                            sendBroadcast(EditIntent);
+                            Toast.makeText(TimeSetting.this,"修改成功",Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    }
+                });
+                break;
+            case TimeTask.TIMETASK_MODE_NEW:
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //待修改
+                        if ((hours < now.getHours()) || (hours == now.getHours() && minutes < now.getMinutes())) {
+                            Toast.makeText(TimeSetting.this,"设定时间不能早于当前时间",Toast.LENGTH_SHORT).show();
+                        } else {
+                            Intent intent = new Intent();
+                            intent.setAction(SEND_TIME_SETTING);
+                            intent.putExtra("hour", hours);
+                            intent.putExtra("minute", minutes);
+                            intent.putExtra("number",-1);
+                            sendBroadcast(intent);
+                            Toast.makeText(TimeSetting.this,"设置成功",Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    }
+                });
+                break;
+            default:
+                break;
+        }
+
+
+
+
+
+
+
+
+
 
 
     }

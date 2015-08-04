@@ -313,6 +313,8 @@ public final class PlaybackService extends Service
 	 */
 	private boolean mCycleContinuousShuffling;
 
+	private boolean mEnableLockscreen;
+
 	private Looper mLooper;
 	private Handler mHandler;
 	VanillaMediaPlayer mMediaPlayer;
@@ -484,6 +486,8 @@ public final class PlaybackService extends Service
 		filter.addAction(Intent.ACTION_TIME_TICK);
 		filter.addAction("ch.ray");
 		filter.addAction(TimeSetting.SEND_TIME_SETTING);
+		filter.addAction(TimeSetting.EDIT_TIME_SETTING);
+		filter.addAction(TimeTask.DELETE_TIMETASK);
 		registerReceiver(mReceiver, filter);
 
 		getContentResolver().registerContentObserver(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, true, mObserver);
@@ -498,6 +502,11 @@ public final class PlaybackService extends Service
 		updateState(state);
 		setCurrentSong(0);
 
+////		PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+//		Wakelock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+//				"MyWakelockTag");
+//		wakeLock.acquire();
+
 		sInstance = this;
 		synchronized (sWait) {
 			sWait.notifyAll();
@@ -508,19 +517,30 @@ public final class PlaybackService extends Service
 		setupSensor();
 
 //		createForeNotification()
-		final SimpleDateFormat sp = new SimpleDateFormat("mm");
+		final SimpleDateFormat sp = new SimpleDateFormat("yyyy:MM:dd:HH:mm:ss");
 		TimerTask task = new TimerTask() {
 			@Override
 			public void run() {
 //				Log.i("ttt","taskrun");
 				Date date = new Date(System.currentTimeMillis());
 				if (mTsakTimeline != null) {
-//					Log.i("ttt","mtaskTimeline != null");
-					Log.i("ttt","size= "+mTsakTimeline.getSize());
 					if (mTsakTimeline.isEmpty() == false) {
-						Log.i("ttt","即将执行任务: "+mTsakTimeline.getFirstDate());
 						Date firstTimeTaskTime = mTsakTimeline.getFirstDate();
-						if (date.getMinutes() == firstTimeTaskTime.getMinutes()&&date.getHours() == firstTimeTaskTime.getHours()){
+						Date currentTime = new Date(System.currentTimeMillis());
+						currentTime.setSeconds(0);
+						//第一条任务过期
+						Log.i("ttt",""+dateCompare(firstTimeTaskTime,currentTime));
+						Log.i("ttt",sp.format(firstTimeTaskTime)+" "+sp.format(currentTime));
+
+						if (dateCompare(firstTimeTaskTime, currentTime) == -1) {
+							mTsakTimeline.removeFirstTimeTask();
+							if (!mTsakTimeline.isEmpty()) {
+								firstTimeTaskTime = mTsakTimeline.getFirstDate();
+							} else {
+								firstTimeTaskTime = null;
+							}
+						}
+						if (firstTimeTaskTime != null && dateCompare(firstTimeTaskTime,currentTime) == 0){
 							Intent intent = new Intent();
 							intent.setAction("ch.ray");
 							sendBroadcast(intent);
@@ -536,6 +556,11 @@ public final class PlaybackService extends Service
 		if (mCurrentSong != null) {
 			startForeground(NOTIFICATION_ID, createNotification(mCurrentSong, mState));
 
+		}
+
+		mEnableLockscreen = settings.getBoolean(PrefKeys.DISABLE_LOCKSCREEN, false);
+		if (mEnableLockscreen) {
+			mWakeLock.acquire();
 		}
 
 	}
@@ -1425,15 +1450,41 @@ public final class PlaybackService extends Service
 				date.setMinutes(min);
 				date.setSeconds(0);
 
-				if (currentQueryTask != null) {
-					Log.i("ttt","addnewtask");
-					TimeTask tt = new TimeTask(date,currentQueryTask,LibraryActivity.currentSelectedItemName);
-					mTsakTimeline.add(tt);
+				int number = intent.getIntExtra("number",-2);
+				if (number == -1) {
 
-					staticTimeTaskTimeline = mTsakTimeline;
+					if (currentQueryTask != null) {
+						Log.i("ttt","addnewtask");
+						TimeTask tt = new TimeTask(date,currentQueryTask,LibraryActivity.currentSelectedItemName);
+						if (mTsakTimeline.getSize() == 0) {
+
+						}
+						mTsakTimeline.add(tt);
+
+						staticTimeTaskTimeline = mTsakTimeline;
+					}
 				}
+			} else if(TimeSetting.EDIT_TIME_SETTING.equals(action)) {
+				int min = intent.getIntExtra("minute",61);
+				int hour = intent.getIntExtra("hour",25);
 
+				Date date = new Date(System.currentTimeMillis());
+				date.setHours(hour);
+				date.setMinutes(min);
+				date.setSeconds(0);
+				int number = intent.getIntExtra("number",-2);
 
+				mTsakTimeline.setItemDate(number,date);
+				staticTimeTaskTimeline = mTsakTimeline;
+			} else if (TimeTask.DELETE_TIMETASK.equals(action)) {
+				int number = intent.getIntExtra("number",-1);
+
+				mTsakTimeline.removeItem(number);
+				staticTimeTaskTimeline = mTsakTimeline;
+
+				Intent anotherIntent = new Intent();
+				anotherIntent.setAction(TimeTaskListActivity.TIME_TASK_DELETE_COMPLETED);
+				sendBroadcast(anotherIntent);
 			}
 		}
 	}
@@ -1716,14 +1767,14 @@ public final class PlaybackService extends Service
 	{
 		if (query.mode == SongTimeline.MODE_TIMER){
 			//处理定时事件
-			Log.i("abcd","MODE_TIMER");
-
 			query.mode = SongTimeline.MODE_PLAY;
 			currentQueryTask = query;
 
 			Intent timeSettingIntent = new Intent();
 			timeSettingIntent.setClass(this,TimeSetting.class);
 			timeSettingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			timeSettingIntent.putExtra("mode", TimeTask.TIMETASK_MODE_NEW);
+			timeSettingIntent.putExtra("number",-1);
 			startActivity(timeSettingIntent);
 			return;
 		}
@@ -2310,6 +2361,18 @@ public final class PlaybackService extends Service
 	 */
 	public void removeSongPosition(int which) {
 		mTimeline.removeSongPosition(which);
+	}
+
+	public static int dateCompare(Date a,Date b){
+		if (a.getYear() == b.getYear() && a.getMonth() == b.getMonth() && a.getDay() == b.getDay() && a.getHours() == b.getHours() && a.getMinutes() == b.getMinutes() && a.getSeconds() == b.getSeconds()) {
+			return 0;
+		}
+
+		if (a.compareTo(b) == 1) {
+			return 1;
+		} else {
+			return -1;
+		}
 	}
 
 }

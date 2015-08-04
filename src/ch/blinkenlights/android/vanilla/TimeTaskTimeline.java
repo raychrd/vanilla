@@ -27,15 +27,19 @@ public class TimeTaskTimeline {
             return true;
         } else {
             for (int i = 0;i < timeTaskList.size();i++) {
-                if (t.compareTo(timeTaskList.getFirst()) == 1) {
+                int result = t.compareTo(timeTaskList.get(i));
+                if (result == 1) {
                     if (i < timeTaskList.size()-1) {
                         continue;
                     } else {
                         timeTaskList.addLast(t);
                         return true;
                     }
-                } else {
+                } else if (result == -1){
                     timeTaskList.add(i,t);
+                    return true;
+                } else if (result == 0){
+                    timeTaskList.set(i,t);
                     return true;
                 }
             }
@@ -70,6 +74,13 @@ public class TimeTaskTimeline {
 
     public TimeTask get(int i) {
         return timeTaskList.get(i);
+    }
+
+    public void setItemDate(int i,Date date) {
+        timeTaskList.get(i).setDate(date);
+    }
+    public void removeItem(int i) {
+        timeTaskList.remove(i);
     }
 
 }
