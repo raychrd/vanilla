@@ -219,6 +219,9 @@ public class LibraryActivity
         }
 
         loadAlbumIntent(getIntent());
+
+        mDefaultAction = Integer.parseInt(settings.getString(PrefKeys.DEFAULT_ACTION_INT, "0"));
+
     }
 
     @Override
@@ -229,12 +232,9 @@ public class LibraryActivity
 
     @Override
     public void onStart() {
-        super.onStart();
-
-        SharedPreferences settings = PlaybackService.getSettings(this);
-        mDefaultAction = Integer.parseInt(settings.getString(PrefKeys.DEFAULT_ACTION_INT, "7"));
         mLastActedId = LibraryAdapter.INVALID_ID;
         updateHeaders();
+        super.onStart();
 
 
     }

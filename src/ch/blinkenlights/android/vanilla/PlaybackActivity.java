@@ -536,14 +536,14 @@ public abstract class PlaybackActivity extends Activity
         if (view == mShuffleButton) {
             menu.add(GROUP_SHUFFLE, SongTimeline.SHUFFLE_NONE, 0, R.string.no_shuffle);
             menu.add(GROUP_SHUFFLE, SongTimeline.SHUFFLE_SONGS, 0, R.string.shuffle_songs);
-            menu.add(GROUP_SHUFFLE, SongTimeline.SHUFFLE_CONTINUOUS, 0, R.string.shuffle_songs_continuously);
-            menu.add(GROUP_SHUFFLE, SongTimeline.SHUFFLE_ALBUMS, 0, R.string.shuffle_albums);
+//            menu.add(GROUP_SHUFFLE, SongTimeline.SHUFFLE_CONTINUOUS, 0, R.string.shuffle_songs_continuously);
+//            menu.add(GROUP_SHUFFLE, SongTimeline.SHUFFLE_ALBUMS, 0, R.string.shuffle_albums);
         } else if (view == mEndButton) {
             menu.add(GROUP_FINISH, SongTimeline.FINISH_STOP, 0, R.string.no_repeat);
             menu.add(GROUP_FINISH, SongTimeline.FINISH_REPEAT, 0, R.string.repeat);
             menu.add(GROUP_FINISH, SongTimeline.FINISH_REPEAT_CURRENT, 0, R.string.repeat_current_song);
-            menu.add(GROUP_FINISH, SongTimeline.FINISH_STOP_CURRENT, 0, R.string.stop_current_song);
-            menu.add(GROUP_FINISH, SongTimeline.FINISH_RANDOM, 0, R.string.random);
+//            menu.add(GROUP_FINISH, SongTimeline.FINISH_STOP_CURRENT, 0, R.string.stop_current_song);
+//            menu.add(GROUP_FINISH, SongTimeline.FINISH_RANDOM, 0, R.string.random);
         }
     }
 

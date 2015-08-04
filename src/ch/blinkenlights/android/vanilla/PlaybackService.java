@@ -1331,7 +1331,8 @@ public final class PlaybackService extends Service
     public int cycleFinishAction() {
         synchronized (mStateLock) {
             int mode = finishAction(mState) + 1;
-            if (mode > SongTimeline.FINISH_RANDOM)
+            Log.i("mode","pre"+mode);
+            if (mode > SongTimeline.FINISH_REPEAT_CURRENT)
                 mode = SongTimeline.FINISH_STOP;
             return setFinishAction(mode);
         }
@@ -1356,13 +1357,21 @@ public final class PlaybackService extends Service
      */
     public int cycleShuffle() {
         synchronized (mStateLock) {
-            int mode = shuffleMode(mState) + 1;
-            if (mCycleContinuousShuffling == true && mode == SongTimeline.SHUFFLE_SONGS)
-                mode++; // skip this mode, advance to continuous
-            if (mCycleContinuousShuffling == false && mode == SongTimeline.SHUFFLE_CONTINUOUS)
-                mode++; // skip this mode, advance to albums
-            if (mode > SongTimeline.SHUFFLE_ALBUMS)
-                mode = SongTimeline.SHUFFLE_NONE; // end reached: switch to none
+//            int mode = shuffleMode(mState) + 1;
+            int mode = shuffleMode(mState);
+//            Log.i("mode","pre "+mode);
+//            if (mCycleContinuousShuffling == true && mode == SongTimeline.SHUFFLE_SONGS)
+//                mode++; // skip this mode, advance to continuous
+//            if (mCycleContinuousShuffling == false && mode == SongTimeline.SHUFFLE_CONTINUOUS)
+//                mode++; // skip this mode, advance to albums
+//            if (mode > SongTimeline.SHUFFLE_ALBUMS)
+//                mode = SongTimeline.SHUFFLE_NONE; // end reached: switch to none
+            if (mode == SongTimeline.SHUFFLE_NONE) {
+                mode = SongTimeline.SHUFFLE_SONGS;
+            } else {
+                mode = SongTimeline.SHUFFLE_NONE;
+            }
+//            Log.i("mode","last "+mode);
             return setShuffleMode(mode);
         }
     }
