@@ -172,7 +172,7 @@ THE SOFTWARE.
 				<data android:mimeType="application/itunes"/>
 			</intent-filter>
 		</activity>
-		<activity android:name=".TimeSetting"
+		<activity android:name=".TimeSettingActivity"
 			android:label="@string/time_task"
 			/>
 		<activity android:name=".TimeTaskListActivity"

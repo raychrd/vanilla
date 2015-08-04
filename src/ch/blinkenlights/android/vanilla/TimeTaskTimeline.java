@@ -77,7 +77,10 @@ public class TimeTaskTimeline {
     }
 
     public void setItemDate(int i,Date date) {
-        timeTaskList.get(i).setDate(date);
+        TimeTask tempTask = this.get(i);
+        tempTask.setDate(date);
+        this.removeItem(i);
+        this.add(tempTask);
     }
     public void removeItem(int i) {
         timeTaskList.remove(i);

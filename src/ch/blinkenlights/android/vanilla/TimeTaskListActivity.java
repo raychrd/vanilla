@@ -6,9 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.media.AudioManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -64,7 +62,7 @@ public class TimeTaskListActivity extends ListActivity {
 
         myReceiver = new MyReceiver();
         IntentFilter filter = new IntentFilter();
-        filter.addAction(TimeSetting.EDIT_TIME_SETTING);
+        filter.addAction(TimeSettingActivity.EDIT_TIME_SETTING);
         filter.addAction(TIME_TASK_DELETE_COMPLETED);
         registerReceiver(myReceiver, filter);
     }
@@ -131,7 +129,7 @@ public class TimeTaskListActivity extends ListActivity {
         switch (item.getItemId()) {
             case MENU_OPTION_EDIT:
                 Intent timeSettingIntent = new Intent();
-                timeSettingIntent.setClass(this, TimeSetting.class);
+                timeSettingIntent.setClass(this, TimeSettingActivity.class);
                 timeSettingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 timeSettingIntent.putExtra("mode", TimeTask.TIMETASK_MODE_EDIT);
                 timeSettingIntent.putExtra("number", currentItemNumber);
@@ -141,7 +139,7 @@ public class TimeTaskListActivity extends ListActivity {
             case MENU_OPTION_DELETE:
                 Intent intent = new Intent();
                 intent.setAction(TimeTask.DELETE_TIMETASK);
-                intent.putExtra("number",currentItemNumber);
+                intent.putExtra("number", currentItemNumber);
                 sendBroadcast(intent);
                 Toast.makeText(TimeTaskListActivity.this, "已删除", Toast.LENGTH_SHORT).show();
 //                finish();
@@ -154,7 +152,7 @@ public class TimeTaskListActivity extends ListActivity {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(TimeSetting.EDIT_TIME_SETTING)) {
+            if (intent.getAction().equals(TimeSettingActivity.EDIT_TIME_SETTING)) {
                 getTimeTaskList();
                 list = getData();
                 adapter = new SimpleAdapter(TimeTaskListActivity.this, list, R.layout.timetasklistitem, new String[]{"title", "date"}, new int[]{R.id.ItemTitle, R.id.ItemDate});

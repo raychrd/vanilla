@@ -1,6 +1,5 @@
 package ch.blinkenlights.android.vanilla;
 
-import android.animation.TimeAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,7 +15,7 @@ import java.util.Date;
 /**
  * Created by Ray on 15/8/1.
  */
-public class TimeSetting extends Activity {
+public class TimeSettingActivity extends Activity {
     public static String SEND_TIME_SETTING = "senddatesetting";
     public static String EDIT_TIME_SETTING = "editdatesetting";
     TimePicker timePicker;
@@ -58,17 +57,17 @@ public class TimeSetting extends Activity {
                     public void onClick(View v) {
                         //待修改
                         if ((hours < now.getHours()) || (hours == now.getHours() && minutes < now.getMinutes())) {
-                            Toast.makeText(TimeSetting.this,"设定时间不能早于当前时间",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(TimeSettingActivity.this,"设定时间不能早于当前时间",Toast.LENGTH_SHORT).show();
                         } else {
                             Intent intent = new Intent();
                             intent.setAction(SEND_TIME_SETTING);
                             intent.putExtra("hour", hours);
                             intent.putExtra("minute", minutes);
-                            intent.putExtra("number",itemNumber);
+                            intent.putExtra("number", itemNumber);
                             intent.setAction(EDIT_TIME_SETTING);
                             sendBroadcast(intent);
 //                            sendBroadcast(EditIntent);
-                            Toast.makeText(TimeSetting.this,"修改成功",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(TimeSettingActivity.this,"修改成功",Toast.LENGTH_SHORT).show();
                             finish();
                         }
                     }
@@ -80,7 +79,7 @@ public class TimeSetting extends Activity {
                     public void onClick(View v) {
                         //待修改
                         if ((hours < now.getHours()) || (hours == now.getHours() && minutes < now.getMinutes())) {
-                            Toast.makeText(TimeSetting.this,"设定时间不能早于当前时间",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(TimeSettingActivity.this,"设定时间不能早于当前时间",Toast.LENGTH_SHORT).show();
                         } else {
                             Intent intent = new Intent();
                             intent.setAction(SEND_TIME_SETTING);
@@ -88,7 +87,7 @@ public class TimeSetting extends Activity {
                             intent.putExtra("minute", minutes);
                             intent.putExtra("number",-1);
                             sendBroadcast(intent);
-                            Toast.makeText(TimeSetting.this,"设置成功",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(TimeSettingActivity.this,"设置成功",Toast.LENGTH_SHORT).show();
                             finish();
                         }
                     }

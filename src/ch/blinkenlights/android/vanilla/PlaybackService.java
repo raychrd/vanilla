@@ -56,7 +56,6 @@ import android.os.Process;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
@@ -485,8 +484,8 @@ public final class PlaybackService extends Service
 		filter.addAction(Intent.ACTION_SCREEN_ON);
 		filter.addAction(Intent.ACTION_TIME_TICK);
 		filter.addAction("ch.ray");
-		filter.addAction(TimeSetting.SEND_TIME_SETTING);
-		filter.addAction(TimeSetting.EDIT_TIME_SETTING);
+		filter.addAction(TimeSettingActivity.SEND_TIME_SETTING);
+		filter.addAction(TimeSettingActivity.EDIT_TIME_SETTING);
 		filter.addAction(TimeTask.DELETE_TIMETASK);
 		registerReceiver(mReceiver, filter);
 
@@ -1440,7 +1439,7 @@ public final class PlaybackService extends Service
 			} else if ("ch.ray".equals(action)){
 				runQuery(mTsakTimeline.getFirstQueryTask());
 				mTsakTimeline.removeFirstTimeTask();
-			} else if (TimeSetting.SEND_TIME_SETTING.equals(action)) {
+			} else if (TimeSettingActivity.SEND_TIME_SETTING.equals(action)) {
 				//接收时间广播
 				int min = intent.getIntExtra("minute",61);
 				int hour = intent.getIntExtra("hour",25);
@@ -1464,7 +1463,8 @@ public final class PlaybackService extends Service
 						staticTimeTaskTimeline = mTsakTimeline;
 					}
 				}
-			} else if(TimeSetting.EDIT_TIME_SETTING.equals(action)) {
+			} else if(TimeSettingActivity.
+					EDIT_TIME_SETTING.equals(action)) {
 				int min = intent.getIntExtra("minute",61);
 				int hour = intent.getIntExtra("hour",25);
 
@@ -1771,7 +1771,7 @@ public final class PlaybackService extends Service
 			currentQueryTask = query;
 
 			Intent timeSettingIntent = new Intent();
-			timeSettingIntent.setClass(this,TimeSetting.class);
+			timeSettingIntent.setClass(this,TimeSettingActivity.class);
 			timeSettingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			timeSettingIntent.putExtra("mode", TimeTask.TIMETASK_MODE_NEW);
 			timeSettingIntent.putExtra("number",-1);
