@@ -175,9 +175,9 @@ public final class PlaybackService extends Service
      */
     public static final String ACTION_CLOSE_NOTIFICATION = "ch.blinkenlights.android.vanilla.CLOSE_NOTIFICATION";
 
-    public static final int NEVER = 0;
-    public static final int WHEN_PLAYING = 1;
-    public static final int ALWAYS = 2;
+    public static final int NEVER = 1;
+    public static final int WHEN_PLAYING = 2;
+    public static final int ALWAYS = 0;
 
     /**
      * Notification click action: open LaunchActivity.
@@ -931,7 +931,7 @@ public final class PlaybackService extends Service
             mNotificationAction = createNotificationAction(settings);
             updateNotification();
         } else if (PrefKeys.NOTIFICATION_MODE.equals(key)) {
-            mNotificationMode = Integer.parseInt(settings.getString(PrefKeys.NOTIFICATION_MODE, "1"));
+            mNotificationMode = Integer.parseInt(settings.getString(PrefKeys.NOTIFICATION_MODE, "0"));
             // This is the only way to remove a notification created by
             // startForeground(), even if we are not currently in foreground
             // mode.
@@ -1091,11 +1091,12 @@ public final class PlaybackService extends Service
                     mMediaPlayer.pause();
 
                 if (mNotificationMode == ALWAYS || mForceNotificationVisible) {
-//					stopForeground(false);
+                    Log.i("ttt","stop false");
+					stopForeground(false);
                     mNotificationManager.notify(NOTIFICATION_ID, createNotification(mCurrentSong, mState));
                 } else {
                     Log.i("ttt", "stop foreground");
-//					stopForeground(true);
+					stopForeground(true);
                 }
 
                 // Delay entering deep sleep. This allows the headset
