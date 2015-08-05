@@ -30,18 +30,17 @@ import java.util.Map;
  */
 public class TimeTaskListActivity extends ListActivity {
 
-    public  static final int MENU_OPTION_EDIT = 1;
-    public  static final int MENU_OPTION_DELETE = 2;
-    public  static final String TIME_TASK_DELETE_COMPLETED = "timetaskdeletecompleted";
-//    PlaybackService mPlaybackService = null;
+    public static final int MENU_OPTION_EDIT = 1;
+    public static final int MENU_OPTION_DELETE = 2;
+    public static final String TIME_TASK_DELETE_COMPLETED = "timetaskdeletecompleted";
+    //    PlaybackService mPlaybackService = null;
     TimeTaskTimeline mTimwTaskline = null;
     SimpleDateFormat sp = new SimpleDateFormat("yyyy年MM月dd日HH时mm分");
-    List<Map<String, String>> list ;
+    List<Map<String, String>> list;
     ListView listView;
-    private int  currentItemNumber = 0;
+    private int currentItemNumber = 0;
     BaseAdapter adapter;
     MyReceiver myReceiver;
-
 
 
     @Override
@@ -53,7 +52,7 @@ public class TimeTaskListActivity extends ListActivity {
 
         getTimeTaskList();
         list = getData();
-        adapter = new SimpleAdapter(this,list,R.layout.timetasklistitem,new String[] {"title","date"},new int[] {R.id.ItemTitle,R.id.ItemDate});
+        adapter = new SimpleAdapter(this, list, R.layout.timetasklistitem, new String[]{"title", "date"}, new int[]{R.id.ItemTitle, R.id.ItemDate});
 //        adapter =
         setListAdapter(adapter);
 
@@ -74,7 +73,7 @@ public class TimeTaskListActivity extends ListActivity {
         Window window = getWindow();
 
         if (prefs.getBoolean(PrefKeys.DISABLE_LOCKSCREEN, false))
-           window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
 
@@ -82,9 +81,9 @@ public class TimeTaskListActivity extends ListActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         return true;
     }
+
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
+    public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             finish();
             return true;
@@ -93,15 +92,15 @@ public class TimeTaskListActivity extends ListActivity {
         }
     }
 
-    public List<Map<String,String>> getData() {
-        Map<String, String> map ;
+    public List<Map<String, String>> getData() {
+        Map<String, String> map;
         List<Map<String, String>> mList = new ArrayList<Map<String, String>>();
-        int size = mTimwTaskline==null?0:mTimwTaskline.getSize();
-        for (int i = 0; i < size ;i++){
+        int size = mTimwTaskline == null ? 0 : mTimwTaskline.getSize();
+        for (int i = 0; i < size; i++) {
             map = new HashMap<String, String>();
-            map.put("title",mTimwTaskline.get(i).title);
+            map.put("title", mTimwTaskline.get(i).title);
             String date = sp.format(mTimwTaskline.get(i).date);
-            map.put("date","开始时间:"+date);
+            map.put("date", "开始时间:" + date);
             mList.add(map);
         }
         return mList;
@@ -116,10 +115,10 @@ public class TimeTaskListActivity extends ListActivity {
         super.onCreateContextMenu(menu, v, menuInfo);
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
         String title = (list.get(info.position)).get("title");
-        menu.setHeaderTitle(title==null?"选项...":title+"...");
+        menu.setHeaderTitle(title == null ? "选项" : title );
         menu.add(0, MENU_OPTION_EDIT, 0, "修改");
-        menu.add(0,MENU_OPTION_DELETE,0,"删除");
-        currentItemNumber = info.position ;//maybe
+        menu.add(0, MENU_OPTION_DELETE, 0, "删除");
+        currentItemNumber = info.position;//maybe
     }
 
     @Override
@@ -148,7 +147,7 @@ public class TimeTaskListActivity extends ListActivity {
         return super.onContextItemSelected(item);
     }
 
-    public class MyReceiver extends BroadcastReceiver{
+    public class MyReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -161,7 +160,7 @@ public class TimeTaskListActivity extends ListActivity {
             } else if (intent.getAction().equals(TIME_TASK_DELETE_COMPLETED)) {
                 getTimeTaskList();
                 list = getData();
-                adapter = new SimpleAdapter(TimeTaskListActivity.this,list,R.layout.timetasklistitem,new String[] {"title","date"},new int[] {R.id.ItemTitle,R.id.ItemDate});
+                adapter = new SimpleAdapter(TimeTaskListActivity.this, list, R.layout.timetasklistitem, new String[]{"title", "date"}, new int[]{R.id.ItemTitle, R.id.ItemDate});
                 getListView().setAdapter(adapter);
                 adapter.notifyDataSetChanged();
             }

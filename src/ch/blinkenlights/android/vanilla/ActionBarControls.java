@@ -33,38 +33,39 @@ import android.util.DisplayMetrics;
  */
 public class ActionBarControls extends LinearLayout {
 
-	private final int dpiElementLp    = 52;  // Size of the ActionBarSearch icon in 5.x (50 + some slack)
-	private final int dpiElementHolo  = 64;  // Size of the ActionBarSearch icon in HOLO
-	private final int dpiMaxWidth     = 350; // Never use more then 350 DPIs
-	private final int visibleElements = 2;   // The ActionBarSearch + Menu icons are visible
+    private final int dpiElementLp = 52;  // Size of the ActionBarSearch icon in 5.x (50 + some slack)
+    private final int dpiElementHolo = 64;  // Size of the ActionBarSearch icon in HOLO
+    private final int dpiMaxWidth = 350; // Never use more then 350 DPIs
+    private final int visibleElements = 2;   // The ActionBarSearch + Menu icons are visible
 
-	public ActionBarControls(Context context, AttributeSet attrs) {
-		super(context, attrs);
-	}
+    public ActionBarControls(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
 
-	public void onMeasure(int ws, int hs) {
-		super.onMeasure(ws, hs);
+    public void onMeasure(int ws, int hs) {
+        super.onMeasure(ws, hs);
 
-		final float density = getResources().getDisplayMetrics().density;
-		final int dpiElement = ( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? dpiElementLp : dpiElementHolo );
-		int widthMode = MeasureSpec.getMode(ws);
+        final float density = getResources().getDisplayMetrics().density;
+        final int dpiElement = (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? dpiElementLp : dpiElementHolo);
+        int widthMode = MeasureSpec.getMode(ws);
 
-		if (widthMode != MeasureSpec.EXACTLY) {
-			float dpiAvailable = (getSmallestAxisPx() / density) - (dpiElement * visibleElements);
-			if (dpiAvailable > dpiMaxWidth || dpiAvailable < 1) {
-				dpiAvailable = dpiMaxWidth;
-			}
-			setMeasuredDimension((int)(dpiAvailable * density), (int)(dpiElement * density));
-		}
-	}
+        if (widthMode != MeasureSpec.EXACTLY) {
+            float dpiAvailable = (getSmallestAxisPx() / density) - (dpiElement * visibleElements);
+            if (dpiAvailable > dpiMaxWidth || dpiAvailable < 1) {
+                dpiAvailable = dpiMaxWidth;
+            }
+            setMeasuredDimension((int) (dpiAvailable * density), (int) (dpiElement * density));
+        }
+    }
 
-	/**
-	 * Returns the smaller axis of the display dimensions
-	 * @return The dimension of the smaller axis in pixels
-	 */
-	private final int getSmallestAxisPx() {
-		DisplayMetrics metrics = getResources().getDisplayMetrics();
-		return (metrics.widthPixels > metrics.heightPixels ? metrics.heightPixels : metrics.widthPixels);
-	}
+    /**
+     * Returns the smaller axis of the display dimensions
+     *
+     * @return The dimension of the smaller axis in pixels
+     */
+    private final int getSmallestAxisPx() {
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        return (metrics.widthPixels > metrics.heightPixels ? metrics.heightPixels : metrics.widthPixels);
+    }
 
 }

@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-    <string name="app_name">Vanilla Music</string>
+    <string name="app_name">电台播放器</string>
     <!--Playback Activity (main screen)-->
     <string name="no_songs">在您的设备上未找到音乐</string>
     <string name="empty_queue">未选择歌曲。请从媒体库中选择或轻触此消息开始随机播放音乐。</string>
@@ -36,7 +36,7 @@
     <string name="cancel">取消</string>
     <string name="delete_playlist">删除播放列表 %s？</string>
     <!--Library-->
-    <string name="enqueue">播放列表</string>
+    <string name="enqueue">添加到当前播放列表</string>
     <string name="enqueue_as_next">下一首播放</string>
     <string name="play">播放</string>
     <string name="edit">编辑</string>
@@ -134,7 +134,7 @@
     <string name="readahead_summary">预先加载当前歌曲（此选项可以解决由于SD卡速度较慢引起的延迟问题）</string>
     <string name="equalizer">均衡器</string>
     <string name="cycle_continuous_shuffling">连续随机播放</string>
-    <string name="cycle_continuous_shuffling_summary">\'随机模式\'会以随机顺序播放音乐</string>
+    <string name="cycle_continuous_shuffling_summary">\'随机模式\'会以完全随机顺序播放音乐</string>
     <string name="notifications">通知</string>
     <string name="notification_mode_title">通知模式</string>
     <string name="notification_action_title">启用通知</string>
@@ -164,7 +164,7 @@
     <string name="use_dark_theme_title">使用深色主题</string>
     <string name="use_dark_theme_summary">使用深色主题</string>
     <string name="disable_lockscreen_title">停用锁屏</string>
-    <string name="disable_lockscreen_summary">启用后在播放界面、媒体库界面和定时任务列表界面中停用锁屏（注：若要使用定时功能请保证此项被选中）</string>
+    <string name="disable_lockscreen_summary">启用后在播放界面、媒体库界面和计时任务列表界面中停用锁屏（注：若要使用定时功能请保证此项被选中并在不操作手机时使手机停留在播放界面、媒体库界面或计时任务列表界面中）</string>
     <string name="use_idle_timeout_title">开启闲置超时</string>
     <string name="use_idle_timeout_summary">启用后，在一定时间后停止播放 </string>
     <string name="idle_timeout_title">闲置超时</string>

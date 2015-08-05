@@ -44,194 +44,182 @@ import android.content.Intent;
 import android.media.audiofx.AudioEffect;
 import android.net.Uri;
 import android.util.TypedValue;
+
 import java.util.List;
 
 /**
  * The preferences activity in which one can change application preferences.
  */
 public class PreferencesActivity extends PreferenceActivity {
-	/**
-	 * Initialize the activity, loading the preference specifications.
-	 */
-	@SuppressWarnings("deprecation")
-	@Override
-	protected void onCreate(Bundle savedInstanceState)
-	{
-		ThemeHelper.setTheme(this, R.style.BackActionBar);
-		super.onCreate(savedInstanceState);
-	}
+    /**
+     * Initialize the activity, loading the preference specifications.
+     */
+    @SuppressWarnings("deprecation")
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        ThemeHelper.setTheme(this, R.style.BackActionBar);
+        super.onCreate(savedInstanceState);
+    }
 
-	@Override
-	public void onBuildHeaders(List<Header> target)
-	{
-		loadHeadersFromResource(R.xml.preference_headers, target);
-	}
+    @Override
+    public void onBuildHeaders(List<Header> target) {
+        loadHeadersFromResource(R.xml.preference_headers, target);
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-		if (item.getItemId() == android.R.id.home) {
-			finish();
-			return true;
-		} else {
-			return super.onOptionsItemSelected(item);
-		}
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+    }
 
-	public static class AudioFragment extends PreferenceFragment {
-		@Override
-		public void onCreate(Bundle savedInstanceState)
-		{
-			super.onCreate(savedInstanceState);
-			addPreferencesFromResource(R.xml.preference_audio);
-		}
-	}
+    public static class AudioFragment extends PreferenceFragment {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.preference_audio);
+        }
+    }
 
-	public static class ReplayGainFragment extends PreferenceFragment {
-		CheckBoxPreference cbTrackReplayGain;
-		CheckBoxPreference cbAlbumReplayGain;
-		SeekBarPreference sbGainBump;
-		SeekBarPreference sbUntaggedDebump;
+    public static class ReplayGainFragment extends PreferenceFragment {
+        CheckBoxPreference cbTrackReplayGain;
+        CheckBoxPreference cbAlbumReplayGain;
+        SeekBarPreference sbGainBump;
+        SeekBarPreference sbUntaggedDebump;
 
-		@Override
-		public void onCreate(Bundle savedInstanceState)
-		{
-			super.onCreate(savedInstanceState);
-			addPreferencesFromResource(R.xml.preference_replaygain);
-			
-			cbTrackReplayGain = (CheckBoxPreference)findPreference(PrefKeys.ENABLE_TRACK_REPLAYGAIN);
-			cbAlbumReplayGain = (CheckBoxPreference)findPreference(PrefKeys.ENABLE_ALBUM_REPLAYGAIN);
-			sbGainBump = (SeekBarPreference)findPreference(PrefKeys.REPLAYGAIN_BUMP);
-			sbUntaggedDebump = (SeekBarPreference)findPreference(PrefKeys.REPLAYGAIN_UNTAGGED_DEBUMP);
-			
-			Preference.OnPreferenceClickListener pcListener = new Preference.OnPreferenceClickListener() {
-				public boolean onPreferenceClick(Preference preference) {
-					updateConfigWidgets();
-					return false;
-				}
-			};
-			
-			cbTrackReplayGain.setOnPreferenceClickListener(pcListener);
-			cbAlbumReplayGain.setOnPreferenceClickListener(pcListener);
-			updateConfigWidgets();
-		}
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.preference_replaygain);
 
-		private void updateConfigWidgets() {
-			boolean rgOn = (cbTrackReplayGain.isChecked() || cbAlbumReplayGain.isChecked());
-			sbGainBump.setEnabled(rgOn);
-			sbUntaggedDebump.setEnabled(rgOn);
-		}
-	}
+            cbTrackReplayGain = (CheckBoxPreference) findPreference(PrefKeys.ENABLE_TRACK_REPLAYGAIN);
+            cbAlbumReplayGain = (CheckBoxPreference) findPreference(PrefKeys.ENABLE_ALBUM_REPLAYGAIN);
+            sbGainBump = (SeekBarPreference) findPreference(PrefKeys.REPLAYGAIN_BUMP);
+            sbUntaggedDebump = (SeekBarPreference) findPreference(PrefKeys.REPLAYGAIN_UNTAGGED_DEBUMP);
 
-	public static class EqualizerFragment extends PreferenceFragment {
-		@Override
-		public void onCreate(Bundle savedInstanceState)
-		{
-			super.onCreate(savedInstanceState);
+            Preference.OnPreferenceClickListener pcListener = new Preference.OnPreferenceClickListener() {
+                public boolean onPreferenceClick(Preference preference) {
+                    updateConfigWidgets();
+                    return false;
+                }
+            };
 
-			Context context = getActivity();
-			int mAudioSession = 0;
-			if (PlaybackService.hasInstance()) {
-				PlaybackService service = PlaybackService.get(context);
-				mAudioSession = service.getAudioSession();
-			}
+            cbTrackReplayGain.setOnPreferenceClickListener(pcListener);
+            cbAlbumReplayGain.setOnPreferenceClickListener(pcListener);
+            updateConfigWidgets();
+        }
 
-			try {
-				final Intent effects = new Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL);
-				effects.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, context.getPackageName());
-				effects.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, mAudioSession);
-				startActivityForResult(effects, 0);
-			} catch (Exception e) {
-				// ignored. Whee!
-			}
+        private void updateConfigWidgets() {
+            boolean rgOn = (cbTrackReplayGain.isChecked() || cbAlbumReplayGain.isChecked());
+            sbGainBump.setEnabled(rgOn);
+            sbUntaggedDebump.setEnabled(rgOn);
+        }
+    }
 
-			getActivity().finish();
-		}
-	}
+    public static class EqualizerFragment extends PreferenceFragment {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
 
-	public static class PlaybackFragment extends PreferenceFragment {
-		@Override
-		public void onCreate(Bundle savedInstanceState)
-		{
-			super.onCreate(savedInstanceState);
-			addPreferencesFromResource(R.xml.preference_playback);
+            Context context = getActivity();
+            int mAudioSession = 0;
+            if (PlaybackService.hasInstance()) {
+                PlaybackService service = PlaybackService.get(context);
+                mAudioSession = service.getAudioSession();
+            }
 
-			// Hide the dark theme preference if this device
-			// does not support multiple themes
-			PreferenceScreen screen = getPreferenceScreen();
-			CheckBoxPreference dark_theme_pref = (CheckBoxPreference)findPreference("use_dark_theme");
-			if (ThemeHelper.couldUseDarkTheme() == false)
-				screen.removePreference(dark_theme_pref);
+            try {
+                final Intent effects = new Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL);
+                effects.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, context.getPackageName());
+                effects.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, mAudioSession);
+                startActivityForResult(effects, 0);
+            } catch (Exception e) {
+                // ignored. Whee!
+            }
 
-		}
-	}
+            getActivity().finish();
+        }
+    }
 
-	public static class LibraryFragment extends PreferenceFragment {
-		@Override
-		public void onCreate(Bundle savedInstanceState)
-		{
-			super.onCreate(savedInstanceState);
-			addPreferencesFromResource(R.xml.preference_library);
-		}
-	}
+    public static class PlaybackFragment extends PreferenceFragment {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.preference_playback);
 
-	public static class NotificationsFragment extends PreferenceFragment {
-		@Override
-		public void onCreate(Bundle savedInstanceState)
-		{
-			super.onCreate(savedInstanceState);
-			addPreferencesFromResource(R.xml.preference_notifications);
-		}
-	}
+            // Hide the dark theme preference if this device
+            // does not support multiple themes
+            PreferenceScreen screen = getPreferenceScreen();
+            CheckBoxPreference dark_theme_pref = (CheckBoxPreference) findPreference("use_dark_theme");
+            if (ThemeHelper.couldUseDarkTheme() == false)
+                screen.removePreference(dark_theme_pref);
 
-	public static class ShakeFragment extends PreferenceFragment {
-		@Override
-		public void onCreate(Bundle savedInstanceState)
-		{
-			super.onCreate(savedInstanceState);
-			addPreferencesFromResource(R.xml.preference_shake);
-		}
-	}
+        }
+    }
 
-	public static class CoverArtFragment extends PreferenceFragment {
-		@Override
-		public void onCreate(Bundle savedInstanceState)
-		{
-			super.onCreate(savedInstanceState);
-			addPreferencesFromResource(R.xml.preference_coverart);
-		}
-	}
+    public static class LibraryFragment extends PreferenceFragment {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.preference_library);
+        }
+    }
 
-	public static class MiscFragment extends PreferenceFragment {
-		@Override
-		public void onCreate(Bundle savedInstanceState)
-		{
-			super.onCreate(savedInstanceState);
-			addPreferencesFromResource(R.xml.preference_misc);
-		}
-	}
+    public static class NotificationsFragment extends PreferenceFragment {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.preference_notifications);
+        }
+    }
 
-	public static class AboutFragment extends WebViewFragment {
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-		{
-			WebView view = (WebView)super.onCreateView(inflater, container, savedInstanceState);
-			view.getSettings().setJavaScriptEnabled(true);
+    public static class ShakeFragment extends PreferenceFragment {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.preference_shake);
+        }
+    }
 
-			TypedValue value = new TypedValue();
-			getActivity().getTheme().resolveAttribute(R.attr.overlay_foreground_color, value, true);
-			String fontColor = TypedValue.coerceToString(value.type, value.data);
-			view.loadUrl("file:///android_asset/about.html?"+Uri.encode(fontColor));
-			view.setBackgroundColor(Color.TRANSPARENT);
-			return view;
-		}
-	}
+    public static class CoverArtFragment extends PreferenceFragment {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.preference_coverart);
+        }
+    }
+
+    public static class MiscFragment extends PreferenceFragment {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.preference_misc);
+        }
+    }
+
+    public static class AboutFragment extends WebViewFragment {
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            WebView view = (WebView) super.onCreateView(inflater, container, savedInstanceState);
+            view.getSettings().setJavaScriptEnabled(true);
+
+            TypedValue value = new TypedValue();
+            getActivity().getTheme().resolveAttribute(R.attr.overlay_foreground_color, value, true);
+            String fontColor = TypedValue.coerceToString(value.type, value.data);
+            view.loadUrl("file:///android_asset/about.html?" + Uri.encode(fontColor));
+            view.setBackgroundColor(Color.TRANSPARENT);
+            return view;
+        }
+    }
 
 
-	@Override
-	protected boolean isValidFragment(String fragmentName) {
-		return true;
-	}
+    @Override
+    protected boolean isValidFragment(String fragmentName) {
+        return true;
+    }
 
 
 }

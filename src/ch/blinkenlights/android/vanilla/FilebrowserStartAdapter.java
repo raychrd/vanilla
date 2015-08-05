@@ -30,59 +30,58 @@ import android.widget.ArrayAdapter;
 import android.graphics.drawable.Drawable;
 
 public class FilebrowserStartAdapter
-	extends ArrayAdapter<String>
-	implements View.OnClickListener
-{
-	
-	private final FilebrowserStartActivity mActivity;
-	private final Drawable mFolderIcon;
-	private final LayoutInflater mInflater;
+        extends ArrayAdapter<String>
+        implements View.OnClickListener {
 
-	public FilebrowserStartAdapter(FilebrowserStartActivity activity, int resource) {
-		super(activity, resource);
-		mActivity   = activity;
-		mFolderIcon = activity.getResources().getDrawable(R.drawable.folder);
-		mInflater   = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	}
+    private final FilebrowserStartActivity mActivity;
+    private final Drawable mFolderIcon;
+    private final LayoutInflater mInflater;
 
-	private static class ViewHolder {
-		public int id;
-		public TextView text;
-		public View divider;
-		public ImageView arrow;
-	}
+    public FilebrowserStartAdapter(FilebrowserStartActivity activity, int resource) {
+        super(activity, resource);
+        mActivity = activity;
+        mFolderIcon = activity.getResources().getDrawable(R.drawable.folder);
+        mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
 
-	@Override
-	public View getView(int pos, View convertView, ViewGroup parent) {
-		View view;
-		ViewHolder holder;
+    private static class ViewHolder {
+        public int id;
+        public TextView text;
+        public View divider;
+        public ImageView arrow;
+    }
 
-		if (convertView == null) {
-			view = mInflater.inflate(R.layout.library_row_expandable, null);
-			holder = new ViewHolder();
-			holder.text = (TextView)view.findViewById(R.id.text);
-			holder.divider = view.findViewById(R.id.divider);
-			holder.arrow = (ImageView)view.findViewById(R.id.arrow);
-			holder.text.setOnClickListener(this);
-			view.setTag(holder);
-		} else {
-			view = convertView;
-			holder = (ViewHolder)view.getTag();
-		}
+    @Override
+    public View getView(int pos, View convertView, ViewGroup parent) {
+        View view;
+        ViewHolder holder;
 
-		String label = getItem(pos);
-		holder.id = pos;
-		holder.text.setText(label);
-		holder.divider.setVisibility(View.GONE);
-		holder.arrow.setVisibility(View.GONE);
-		holder.text.setCompoundDrawablesWithIntrinsicBounds(mFolderIcon, null, null, null);
-		return view;
-	}
+        if (convertView == null) {
+            view = mInflater.inflate(R.layout.library_row_expandable, null);
+            holder = new ViewHolder();
+            holder.text = (TextView) view.findViewById(R.id.text);
+            holder.divider = view.findViewById(R.id.divider);
+            holder.arrow = (ImageView) view.findViewById(R.id.arrow);
+            holder.text.setOnClickListener(this);
+            view.setTag(holder);
+        } else {
+            view = convertView;
+            holder = (ViewHolder) view.getTag();
+        }
 
-	@Override
-	public void onClick(View view) {
-		ViewHolder holder = (ViewHolder)((View)view.getParent()).getTag();
-		mActivity.onDirectoryClicked(holder.id);
-	}
+        String label = getItem(pos);
+        holder.id = pos;
+        holder.text.setText(label);
+        holder.divider.setVisibility(View.GONE);
+        holder.arrow.setVisibility(View.GONE);
+        holder.text.setCompoundDrawablesWithIntrinsicBounds(mFolderIcon, null, null, null);
+        return view;
+    }
+
+    @Override
+    public void onClick(View view) {
+        ViewHolder holder = (ViewHolder) ((View) view.getParent()).getTag();
+        mActivity.onDirectoryClicked(holder.id);
+    }
 
 }

@@ -17,8 +17,10 @@ public class TimeTask implements Comparable<Object> {
     public final static String DELETE_TIMETASK = "removetimetask";
 
 
-    TimeTask(){}
-    TimeTask(Date d,QueryTask q,String t){
+    TimeTask() {
+    }
+
+    TimeTask(Date d, QueryTask q, String t) {
         date = d;
         queryTask = q;
         title = t;
@@ -28,11 +30,11 @@ public class TimeTask implements Comparable<Object> {
     public int compareTo(Object another) {
         if (another != null && another instanceof TimeTask) {
             TimeTask mTimeTask = (TimeTask) another;
-            int result = PlaybackService.dateCompare(date,mTimeTask.date);
+            int result = PlaybackService.dateCompare(date, mTimeTask.date);
             if (result == 1) {
                 return 1;
-            } else if (result == -1){
-                return  -1;
+            } else if (result == -1) {
+                return -1;
             } else {
                 return 0;
             }

@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-  <string name="app_name">Vanilla Music</string>
+  <string name="app_name">电台播放器</string>
   <!--Playback Activity (main screen)-->
   <string name="no_songs">在您的裝置上未找到歌曲。</string>
   <string name="empty_queue">沒有選定的歌曲。由媒體庫或是輕點這個訊息進入隨機模式挑選。</string>

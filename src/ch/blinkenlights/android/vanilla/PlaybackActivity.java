@@ -126,7 +126,7 @@ public abstract class PlaybackActivity extends Activity
 
         if (prefs.getBoolean(PrefKeys.DISABLE_LOCKSCREEN, false))
             window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
-                    | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED| WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                    | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         else
             window.clearFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
                     | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -364,7 +364,7 @@ public abstract class PlaybackActivity extends Activity
 //                audio.setStreamVolume(AudioManager.STREAM_MUSIC,targetVolume,0);
 //
 //                Log.i("volume",""+currentVolume);
-                startActivity(new Intent(this,TimeTaskListActivity.class));
+                startActivity(new Intent(this, TimeTaskListActivity.class));
 
                 break;
 

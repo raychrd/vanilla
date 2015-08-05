@@ -26,47 +26,47 @@ import android.graphics.ColorFilter;
 
 public class VanillaImageButton extends ImageButton {
 
-	private Context mContext;
+    private Context mContext;
 
-	public VanillaImageButton(Context context) {
-		super(context);
-		mContext = context;
-		updateImageTint(-1);
-	}
+    public VanillaImageButton(Context context) {
+        super(context);
+        mContext = context;
+        updateImageTint(-1);
+    }
 
-	public VanillaImageButton(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		mContext = context;
-		updateImageTint(-1);
-	}
+    public VanillaImageButton(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        mContext = context;
+        updateImageTint(-1);
+    }
 
-	public VanillaImageButton(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-		mContext = context;
-		updateImageTint(-1);
-	}
+    public VanillaImageButton(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        mContext = context;
+        updateImageTint(-1);
+    }
 
-	@Override
-	public void setImageResource(int resId) {
-		super.setImageResource(resId);
-		this.updateImageTint(resId);
-	}
+    @Override
+    public void setImageResource(int resId) {
+        super.setImageResource(resId);
+        this.updateImageTint(resId);
+    }
 
 
-	private void updateImageTint(int resHint) {
-		int filterColor = R.color.controls_normal;
+    private void updateImageTint(int resHint) {
+        int filterColor = R.color.controls_normal;
 
-		switch (resHint) {
-			case R.drawable.repeat_active:
-			case R.drawable.repeat_current_active:
-			case R.drawable.stop_current_active:
-			case R.drawable.shuffle_active:
-			case R.drawable.shuffle_album_active:
-			case R.drawable.random_active:
-				filterColor = R.color.controls_active;
-		}
+        switch (resHint) {
+            case R.drawable.repeat_active:
+            case R.drawable.repeat_current_active:
+            case R.drawable.stop_current_active:
+            case R.drawable.shuffle_active:
+            case R.drawable.shuffle_album_active:
+            case R.drawable.random_active:
+                filterColor = R.color.controls_active;
+        }
 
-		this.setColorFilter(mContext.getResources().getColor(filterColor));
-	}
+        this.setColorFilter(mContext.getResources().getColor(filterColor));
+    }
 
 }

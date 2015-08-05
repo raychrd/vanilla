@@ -126,14 +126,14 @@ public class LibraryActivity
     /**
      * The SongTimeline add song modes corresponding to each relevant action.
      */
-    public static final int ACTION_TIMER= 9;
+    public static final int ACTION_TIMER = 9;
     /**
      * Timer~~.
      */
     private static final int[] modeForAction =
             {SongTimeline.MODE_PLAY, SongTimeline.MODE_ENQUEUE, -1,
                     SongTimeline.MODE_PLAY_ID_FIRST, SongTimeline.MODE_ENQUEUE_ID_FIRST,
-                    -1, -1, -1, SongTimeline.MODE_ENQUEUE_AS_NEXT,SongTimeline.MODE_TIMER};
+                    -1, -1, -1, SongTimeline.MODE_ENQUEUE_AS_NEXT, SongTimeline.MODE_TIMER};
 
     public ViewPager mViewPager;
     private TabPageIndicator mTabs;
@@ -184,7 +184,7 @@ public class LibraryActivity
 
         SharedPreferences prefs = PlaybackService.getSettings(this);
         Window window = getWindow();
-        Log.i("status",""+prefs.getBoolean(PrefKeys.DISABLE_LOCKSCREEN, false));
+        Log.i("status", "" + prefs.getBoolean(PrefKeys.DISABLE_LOCKSCREEN, false));
 
         if (prefs.getBoolean(PrefKeys.DISABLE_LOCKSCREEN, false))
             window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -221,6 +221,16 @@ public class LibraryActivity
         loadAlbumIntent(getIntent());
 
         mDefaultAction = Integer.parseInt(settings.getString(PrefKeys.DEFAULT_ACTION_INT, "0"));
+
+        SharedPreferences sp = getSharedPreferences("ps", MODE_PRIVATE);
+        Boolean pss = sp.getBoolean("pass", false);
+        Log.i("mode", "" + pss);
+        if (!pss) {
+            Intent intent = new Intent();
+            intent.setClass(this, AuthaenticationActivity.class);
+            startActivity(intent);
+            finish();
+        }
 
     }
 
@@ -451,29 +461,28 @@ public class LibraryActivity
      *
      * @param rowData The data for the row that was clicked.
      */
-	public void onItemClicked(Intent rowData)
-	{
-		//点击歌曲
-		int action = mDefaultAction;
-		if (action == ACTION_LAST_USED)
-			action = mLastAction;
+    public void onItemClicked(Intent rowData) {
+        //点击歌曲
+        int action = mDefaultAction;
+        if (action == ACTION_LAST_USED)
+            action = mLastAction;
 
-		if (action == ACTION_EXPAND && rowData.getBooleanExtra(LibraryAdapter.DATA_EXPANDABLE, false)) {
-			onItemExpanded(rowData);
-		} else if (rowData.getLongExtra(LibraryAdapter.DATA_ID, LibraryAdapter.INVALID_ID) == mLastActedId) {
-			openPlaybackActivity();
-		} else if (action != ACTION_DO_NOTHING) {
-			if (action == ACTION_EXPAND) {
-				// default to playing when trying to expand something that can't
-				// be expanded
-				action = ACTION_PLAY;
-			} else if (action == ACTION_PLAY_OR_ENQUEUE) {
-				//判断如果正在播放的话，就加入播放列表
-				action = (mState & PlaybackService.FLAG_PLAYING) == 0 ? ACTION_PLAY : ACTION_ENQUEUE;
-			}
-			pickSongs(rowData, action);
-		}
-	}
+        if (action == ACTION_EXPAND && rowData.getBooleanExtra(LibraryAdapter.DATA_EXPANDABLE, false)) {
+            onItemExpanded(rowData);
+        } else if (rowData.getLongExtra(LibraryAdapter.DATA_ID, LibraryAdapter.INVALID_ID) == mLastActedId) {
+            openPlaybackActivity();
+        } else if (action != ACTION_DO_NOTHING) {
+            if (action == ACTION_EXPAND) {
+                // default to playing when trying to expand something that can't
+                // be expanded
+                action = ACTION_PLAY;
+            } else if (action == ACTION_PLAY_OR_ENQUEUE) {
+                //判断如果正在播放的话，就加入播放列表
+                action = (mState & PlaybackService.FLAG_PLAYING) == 0 ? ACTION_PLAY : ACTION_ENQUEUE;
+            }
+            pickSongs(rowData, action);
+        }
+    }
 //    public void onItemClicked(Intent rowData) {
 //        Log.i("ttt", "itemclicked");
 //        int action = mDefaultAction;
@@ -698,7 +707,6 @@ public class LibraryActivity
      * Open the playlist editor for the playlist with the given id.
      */
     private void editPlaylist(Intent rowData) {
-        //修改播放列表并且传了rowData love U~
         Intent launch = new Intent(this, PlaylistActivity.class);
         launch.putExtra("playlist", rowData.getLongExtra(LibraryAdapter.DATA_ID, LibraryAdapter.INVALID_ID));
         launch.putExtra("title", rowData.getStringExtra(LibraryAdapter.DATA_TITLE));
@@ -747,7 +755,7 @@ public class LibraryActivity
             }
             case MENU_TIMER: {
                 //here
-				pickSongs(intent,ACTION_TIMER);
+                pickSongs(intent, ACTION_TIMER);
 //                Toast.makeText(this,"MENU_TIMEER",Toast.LENGTH_SHORT).show();
                 break;
             }
@@ -1017,3 +1025,18 @@ public class LibraryActivity
     }
 
 }
+//THANKS ALL
+//<li>Adrian Ulrich</li>
+//<li>Amin Bandali</li>
+//<li>Chris Eby (original creator)</li>
+//<li>David Beswick (various contributions)</li>
+//<li>Ferenc Nagy (icon)</li>
+//<li>Jean-Baptiste Lab (notication color invert)</li>
+//<li>Jean-Fran&ccedil;ois Im (cover art loading)</li>
+//<li>Magnus Anderssen (headset button)</li>
+//<li>Mildred Ki'Lya (stop after track mode)</li>
+//<li>Jerry Liao (Chinese (Taiwan) translation)</li>
+//<li>Someone (Chinese (Mainland) translation)</li>
+//<li>Rosario Antoci (Italian translation)</li>
+//<li>Emir Sar&#305; (Turkish translation)</li>
+//<li>Jiri Gr&ouml;nroos (Finnish translation)</li>

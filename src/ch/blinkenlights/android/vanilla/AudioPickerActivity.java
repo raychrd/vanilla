@@ -29,67 +29,66 @@ import android.widget.Button;
 
 public class AudioPickerActivity extends PlaybackActivity {
 
-	private Uri mUri;
+    private Uri mUri;
 
-	@Override
-	public void onCreate(Bundle icicle) {
-		super.onCreate(icicle);
-        
-		Intent intent = getIntent();
-		if (intent == null) {
-			finish();
-			return;
-		}
+    @Override
+    public void onCreate(Bundle icicle) {
+        super.onCreate(icicle);
 
-		mUri = intent.getData();
-		if (mUri == null || mUri.getScheme().equals("file") == false) { // we do not support streaming
-			finish();
-			return;
-		}
+        Intent intent = getIntent();
+        if (intent == null) {
+            finish();
+            return;
+        }
 
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.audiopicker);
+        mUri = intent.getData();
+        if (mUri == null || mUri.getScheme().equals("file") == false) { // we do not support streaming
+            finish();
+            return;
+        }
 
-		TextView filePath = (TextView)findViewById(R.id.filepath);
-		filePath.setText(mUri.getLastPathSegment());
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.audiopicker);
 
-		// Bind all 3 clickbuttons
-		Button cancelButton = (Button)findViewById(R.id.cancel);
-		cancelButton.setOnClickListener(this);
-		Button enqueueButton = (Button)findViewById(R.id.enqueue);
-		enqueueButton.setOnClickListener(this);
-		enqueueButton.setEnabled( PlaybackService.hasInstance() ); // only active if vanilla is still running
-		Button playButton = (Button)findViewById(R.id.play);
-		playButton.setOnClickListener(this);
+        TextView filePath = (TextView) findViewById(R.id.filepath);
+        filePath.setText(mUri.getLastPathSegment());
 
-	}
+        // Bind all 3 clickbuttons
+        Button cancelButton = (Button) findViewById(R.id.cancel);
+        cancelButton.setOnClickListener(this);
+        Button enqueueButton = (Button) findViewById(R.id.enqueue);
+        enqueueButton.setOnClickListener(this);
+        enqueueButton.setEnabled(PlaybackService.hasInstance()); // only active if vanilla is still running
+        Button playButton = (Button) findViewById(R.id.play);
+        playButton.setOnClickListener(this);
 
-	@Override
-	public void onClick(View view)
-	{
-		int mode;
+    }
 
-		switch(view.getId()) {
-			case R.id.play:
-				mode = SongTimeline.MODE_PLAY;
-				break;
-			case R.id.enqueue:
-				mode = SongTimeline.MODE_ENQUEUE;
-				break;
-			default:
-				finish();
-				return;
-		}
+    @Override
+    public void onClick(View view) {
+        int mode;
 
-		String path = mUri.getPath();
-		PlaybackService service = PlaybackService.get(this);
+        switch (view.getId()) {
+            case R.id.play:
+                mode = SongTimeline.MODE_PLAY;
+                break;
+            case R.id.enqueue:
+                mode = SongTimeline.MODE_ENQUEUE;
+                break;
+            default:
+                finish();
+                return;
+        }
 
-		QueryTask query = MediaUtils.buildFileQuery(path, Song.FILLED_PROJECTION);
-		query.mode = mode;
+        String path = mUri.getPath();
+        PlaybackService service = PlaybackService.get(this);
 
-		service.addSongs(query);
+        QueryTask query = MediaUtils.buildFileQuery(path, Song.FILLED_PROJECTION);
+        query.mode = mode;
 
-		finish();
-	}
+        service.addSongs(query);
+
+        finish();
+    }
 
 }

@@ -120,7 +120,7 @@ public final class PlaybackService extends Service
     public static final String ACTION_PAUSE = "ch.blinkenlights.android.vanilla.action.PAUSE";
     /**
      * Action for startService: toggle playback on/off.
-     * <p/>
+     * <p>
      * Unlike {@link PlaybackService#ACTION_TOGGLE_PLAYBACK}, the toggle does
      * not occur immediately. Instead, it is delayed so that if two of these
      * actions are received within 400 ms, the playback activity is opened
@@ -129,7 +129,7 @@ public final class PlaybackService extends Service
     public static final String ACTION_TOGGLE_PLAYBACK_DELAYED = "ch.blinkenlights.android.vanilla.action.TOGGLE_PLAYBACK_DELAYED";
     /**
      * Action for startService: toggle playback on/off.
-     * <p/>
+     * <p>
      * This works the same way as ACTION_PLAY_PAUSE but prevents the notification
      * from being hidden regardless of notification visibility settings.
      */
@@ -140,7 +140,7 @@ public final class PlaybackService extends Service
     public static final String ACTION_NEXT_SONG = "ch.blinkenlights.android.vanilla.action.NEXT_SONG";
     /**
      * Action for startService: advance to the next song.
-     * <p/>
+     * <p>
      * Unlike {@link PlaybackService#ACTION_NEXT_SONG}, the toggle does
      * not occur immediately. Instead, it is delayed so that if two of these
      * actions are received within 400 ms, the playback activity is opened
@@ -149,7 +149,7 @@ public final class PlaybackService extends Service
     public static final String ACTION_NEXT_SONG_DELAYED = "ch.blinkenlights.android.vanilla.action.NEXT_SONG_DELAYED";
     /**
      * Action for startService: advance to the next song.
-     * <p/>
+     * <p>
      * Like ACTION_NEXT_SONG, but starts playing automatically if paused
      * when this is called.
      */
@@ -243,7 +243,7 @@ public final class PlaybackService extends Service
     /**
      * The PlaybackService state, indicating if the service is playing,
      * repeating, etc.
-     * <p/>
+     * <p>
      * The format of this is 0b00000000_00000000_0000000ff_feeedcba,
      * where each bit is:
      * a:   {@link PlaybackService#FLAG_PLAYING}
@@ -513,7 +513,7 @@ public final class PlaybackService extends Service
 //				"MyWakelockTag");
 //		wakeLock.acquire();
         sBeepPlayer = new AsyncPlayer("BeepPlayer");
-        sBeepSound = Uri.parse("android.resource://ch.blinkenlights.android.vanilla/raw/halfhour");
+        sBeepSound = Uri.parse("android.resource://com.befun.RadioPlayer/raw/halfhour");
 
         sInstance = this;
         synchronized (sWait) {
@@ -525,13 +525,16 @@ public final class PlaybackService extends Service
         setupSensor();
 
         final SimpleDateFormat sp = new SimpleDateFormat("yyyy:MM:dd:HH:mm:ss");
+        final SimpleDateFormat sp2 = new SimpleDateFormat("HH点mm分");
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
 //				Log.i("ttt",""+mEnableChime);
                 Date date = new Date(System.currentTimeMillis());
+                NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                 if (mEnableChime) {
-                    if (date.getMinutes() == 30 && date.getSeconds() == 0) {
+                    if (date.getMinutes() == 44 && date.getSeconds() == 0) {
+
                         //beep
                         volumeSlowlyDown(true);
                         int state = chimePlayPause();
@@ -548,6 +551,14 @@ public final class PlaybackService extends Service
                             play();
                             volumerecovery(true);
                         }
+                        Intent intent = new Intent(PlaybackService.this, LibraryActivity.class);
+                        PendingIntent pIntent = PendingIntent.getActivity(PlaybackService.this, 0, intent, 0);
+                        Notification n = new Notification(R.drawable.icon,"半点报时",System.currentTimeMillis());
+                        n.setLatestEventInfo(PlaybackService.this,"半点报时","现在时间: "+sp2.format(date),pIntent);
+                        n.flags |= Notification.FLAG_AUTO_CANCEL;
+                        nm.notify(15, n);
+
+
                     }
                     if (date.getMinutes() == 0 && date.getSeconds() == 0) {
                         //beep
@@ -566,6 +577,13 @@ public final class PlaybackService extends Service
                             play();
                             volumerecovery(true);
                         }
+
+                        Intent intent = new Intent(PlaybackService.this, LibraryActivity.class);
+                        PendingIntent pIntent = PendingIntent.getActivity(PlaybackService.this, 0, intent, 0);
+                        Notification n = new Notification(R.drawable.icon,"整点报时",System.currentTimeMillis());
+                        n.setLatestEventInfo(PlaybackService.this,"整点报时","现在时间: "+sp2.format(date),pIntent);
+                        n.flags |= Notification.FLAG_AUTO_CANCEL;
+                        nm.notify(15, n);
                     }
                 }
                 if (mTsakTimeline != null) {
@@ -574,8 +592,8 @@ public final class PlaybackService extends Service
                         Date currentTime = new Date(System.currentTimeMillis());
                         currentTime.setSeconds(0);
                         //第一条任务过期
-                        Log.i("ttt", "" + dateCompare(firstTimeTaskTime, currentTime));
-                        Log.i("ttt", sp.format(firstTimeTaskTime) + " " + sp.format(currentTime));
+//                        Log.i("ttt", "" + dateCompare(firstTimeTaskTime, currentTime));
+//                        Log.i("ttt", sp.format(firstTimeTaskTime) + " " + sp.format(currentTime));
 
                         if (dateCompare(firstTimeTaskTime, currentTime) == -1) {
                             mTsakTimeline.removeFirstTimeTask();
@@ -770,7 +788,7 @@ public final class PlaybackService extends Service
             /* No RG value found: decrease volume for untagged song if requested by user */
             adjust = (mReplayGainUntaggedDeBump - 150) / 10f;
         } else {
-			/* This song has some replay gain info, we are now going to apply the 'bump' value
+            /* This song has some replay gain info, we are now going to apply the 'bump' value
 			** The preferences stores the raw value of the seekbar, that's 0-150
 			** But we want -15 <-> +15, so 75 shall be zero */
             adjust += 2 * (mReplayGainBump - 75) / 10f; /* 2* -> we want +-15, not +-7.5 */
@@ -1248,7 +1266,7 @@ public final class PlaybackService extends Service
         return (state);
     }
 
-    public void volumeSlowlyDown(boolean state)  {
+    public void volumeSlowlyDown(boolean state) {
         int currentVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
         if (state) {
             int targetVolume = currentVolume - 1;
@@ -1306,7 +1324,7 @@ public final class PlaybackService extends Service
             targetVolume = targetVolume + 1;
             audio.setStreamVolume(AudioManager.STREAM_MUSIC, targetVolume > 0 ? targetVolume : 0, 0);
         } else {
-            audio.setStreamVolume(AudioManager.STREAM_MUSIC, currentVolume +3 , 0);
+            audio.setStreamVolume(AudioManager.STREAM_MUSIC, currentVolume + 3, 0);
         }
     }
 
@@ -1331,9 +1349,18 @@ public final class PlaybackService extends Service
     public int cycleFinishAction() {
         synchronized (mStateLock) {
             int mode = finishAction(mState) + 1;
-            Log.i("mode","pre"+mode);
-            if (mode > SongTimeline.FINISH_REPEAT_CURRENT)
+            Log.i("mode", "pre" + mode);
+            if (mode > SongTimeline.FINISH_REPEAT_CURRENT) {
                 mode = SongTimeline.FINISH_STOP;
+            }
+
+            if (mode == SongTimeline.FINISH_REPEAT_CURRENT) {
+                Toast.makeText(this,"单曲循环",Toast.LENGTH_SHORT).show();
+            } else if (mode == SongTimeline.FINISH_STOP) {
+                Toast.makeText(this,"循环关闭",Toast.LENGTH_SHORT).show();
+            } else if (mode == SongTimeline.FINISH_REPEAT) {
+                Toast.makeText(this,"列表循环",Toast.LENGTH_SHORT).show();
+            }
             return setFinishAction(mode);
         }
     }
@@ -1368,8 +1395,10 @@ public final class PlaybackService extends Service
 //                mode = SongTimeline.SHUFFLE_NONE; // end reached: switch to none
             if (mode == SongTimeline.SHUFFLE_NONE) {
                 mode = SongTimeline.SHUFFLE_SONGS;
+                Toast.makeText(this,"随机模式",Toast.LENGTH_SHORT).show();
             } else {
                 mode = SongTimeline.SHUFFLE_NONE;
+                Toast.makeText(this,"顺序模式",Toast.LENGTH_SHORT).show();
             }
 //            Log.i("mode","last "+mode);
             return setShuffleMode(mode);
@@ -1611,7 +1640,7 @@ public final class PlaybackService extends Service
     private static final int ENTER_SLEEP_STATE = 1;
     /**
      * Run the given query and add the results to the timeline.
-     * <p/>
+     * <p>
      * obj is the QueryTask. arg1 is the add mode (one of SongTimeline.MODE_*)
      */
     private static final int QUERY = 2;
@@ -1624,7 +1653,7 @@ public final class PlaybackService extends Service
     /**
      * Decrease the volume gradually over five seconds, pausing when 0 is
      * reached.
-     * <p/>
+     * <p>
      * arg1 should be the progress in the fade as a percentage, 1-100.
      */
     private static final int FADE_OUT = 7;
@@ -1820,7 +1849,7 @@ public final class PlaybackService extends Service
     /**
      * Resets the idle timeout countdown. Should be called by a user action
      * has been triggered (new song chosen or playback toggled).
-     * <p/>
+     * <p>
      * If an idle fade out is actually in progress, aborts it and resets the
      * volume.
      */
@@ -1900,7 +1929,7 @@ public final class PlaybackService extends Service
     /**
      * Enqueues all the songs with the same album/artist/genre as the current
      * song.
-     * <p/>
+     * <p>
      * This will clear the queue and place the first song from the group after
      * the playing song.
      *

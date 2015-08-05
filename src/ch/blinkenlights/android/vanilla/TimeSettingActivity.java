@@ -23,6 +23,7 @@ public class TimeSettingActivity extends Activity {
     Button button;
     int hours;
     int minutes;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ThemeHelper.setTheme(this, R.style.BackActionBar);
@@ -47,17 +48,18 @@ public class TimeSettingActivity extends Activity {
             }
         });
 
-        int mode = getIntent().getIntExtra("mode",0);
+        int mode = getIntent().getIntExtra("mode", 0);
         switch (mode) {
             case TimeTask.TIMETASK_MODE_EDIT:
+                setTitle("修改定时任务");
                 button.setText("修改");
-                final int itemNumber = getIntent().getIntExtra("number",-2);
+                final int itemNumber = getIntent().getIntExtra("number", -2);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         //待修改
                         if ((hours < now.getHours()) || (hours == now.getHours() && minutes < now.getMinutes())) {
-                            Toast.makeText(TimeSettingActivity.this,"设定时间不能早于当前时间",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(TimeSettingActivity.this, "设定时间不能早于当前时间", Toast.LENGTH_SHORT).show();
                         } else {
                             Intent intent = new Intent();
                             intent.setAction(SEND_TIME_SETTING);
@@ -67,7 +69,7 @@ public class TimeSettingActivity extends Activity {
                             intent.setAction(EDIT_TIME_SETTING);
                             sendBroadcast(intent);
 //                            sendBroadcast(EditIntent);
-                            Toast.makeText(TimeSettingActivity.this,"修改成功",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(TimeSettingActivity.this, "修改成功", Toast.LENGTH_SHORT).show();
                             finish();
                         }
                     }
@@ -79,15 +81,15 @@ public class TimeSettingActivity extends Activity {
                     public void onClick(View v) {
                         //待修改
                         if ((hours < now.getHours()) || (hours == now.getHours() && minutes < now.getMinutes())) {
-                            Toast.makeText(TimeSettingActivity.this,"设定时间不能早于当前时间",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(TimeSettingActivity.this, "设定时间不能早于当前时间", Toast.LENGTH_SHORT).show();
                         } else {
                             Intent intent = new Intent();
                             intent.setAction(SEND_TIME_SETTING);
                             intent.putExtra("hour", hours);
                             intent.putExtra("minute", minutes);
-                            intent.putExtra("number",-1);
+                            intent.putExtra("number", -1);
                             sendBroadcast(intent);
-                            Toast.makeText(TimeSettingActivity.this,"设置成功",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(TimeSettingActivity.this, "设置成功", Toast.LENGTH_SHORT).show();
                             finish();
                         }
                     }
@@ -98,23 +100,15 @@ public class TimeSettingActivity extends Activity {
         }
 
 
-
-
-
-
-
-
-
-
-
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         return true;
     }
+
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
+    public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             finish();
             return true;

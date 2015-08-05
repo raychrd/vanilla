@@ -14,7 +14,8 @@ import java.util.ListIterator;
  */
 public class TimeTaskTimeline {
     LinkedList<TimeTask> timeTaskList = null;
-    TimeTaskTimeline(){
+
+    TimeTaskTimeline() {
         timeTaskList = new LinkedList<TimeTask>();
     }
 
@@ -26,20 +27,20 @@ public class TimeTaskTimeline {
             Log.i("timetasktimeline", "addfirst");
             return true;
         } else {
-            for (int i = 0;i < timeTaskList.size();i++) {
+            for (int i = 0; i < timeTaskList.size(); i++) {
                 int result = t.compareTo(timeTaskList.get(i));
                 if (result == 1) {
-                    if (i < timeTaskList.size()-1) {
+                    if (i < timeTaskList.size() - 1) {
                         continue;
                     } else {
                         timeTaskList.addLast(t);
                         return true;
                     }
-                } else if (result == -1){
-                    timeTaskList.add(i,t);
+                } else if (result == -1) {
+                    timeTaskList.add(i, t);
                     return true;
-                } else if (result == 0){
-                    timeTaskList.set(i,t);
+                } else if (result == 0) {
+                    timeTaskList.set(i, t);
                     return true;
                 }
             }
@@ -76,12 +77,13 @@ public class TimeTaskTimeline {
         return timeTaskList.get(i);
     }
 
-    public void setItemDate(int i,Date date) {
+    public void setItemDate(int i, Date date) {
         TimeTask tempTask = this.get(i);
         tempTask.setDate(date);
         this.removeItem(i);
         this.add(tempTask);
     }
+
     public void removeItem(int i) {
         timeTaskList.remove(i);
     }
