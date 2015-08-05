@@ -88,7 +88,6 @@ public class PlaylistActivity extends Activity
 
     private Button mEditButton;
     private Button mDeleteButton;
-    private Button mTimerButton;
 
     @Override
     public void onCreate(Bundle state) {
@@ -110,9 +109,6 @@ public class PlaylistActivity extends Activity
         mEditButton = (Button) header.findViewById(R.id.edit);
         mEditButton.setOnClickListener(this);
         mDeleteButton = (Button) header.findViewById(R.id.delete);
-        mDeleteButton.setOnClickListener(this);
-        mTimerButton = (Button) header.findViewById(R.id.timer);
-        mTimerButton.setOnClickListener(this);
         view.addHeaderView(header, null, false);
         mLooper = thread.getLooper();
         mAdapter = new PlaylistAdapter(this, mLooper);
@@ -174,10 +170,7 @@ public class PlaylistActivity extends Activity
                 builder.show();
                 break;
             }
-            case R.id.timer: {
-                Toast.makeText(this, "点击定时器", Toast.LENGTH_SHORT).show();
-                break;
-            }
+
         }
     }
 

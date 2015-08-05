@@ -455,7 +455,7 @@ public final class PlaybackService extends Service
 
         SharedPreferences settings = getSettings(this);
         settings.registerOnSharedPreferenceChangeListener(this);
-        mNotificationMode = Integer.parseInt(settings.getString(PrefKeys.NOTIFICATION_MODE, "1"));
+        mNotificationMode = Integer.parseInt(settings.getString(PrefKeys.NOTIFICATION_MODE, "0"));
         mNotificationNag = settings.getBoolean(PrefKeys.NOTIFICATION_NAG, false);
         mScrobble = settings.getBoolean(PrefKeys.SCROBBLE, false);
         mIdleTimeout = settings.getBoolean(PrefKeys.USE_IDLE_TIMEOUT, false) ? settings.getInt(PrefKeys.IDLE_TIMEOUT, 3600) : 0;
@@ -935,7 +935,9 @@ public final class PlaybackService extends Service
             // This is the only way to remove a notification created by
             // startForeground(), even if we are not currently in foreground
             // mode.
-            stopForeground(true);
+            if (mNotificationMode != 0) {
+                stopForeground(true);
+            }
             updateNotification();
         } else if (PrefKeys.NOTIFICATION_NAG.equals(key)) {
             mNotificationNag = settings.getBoolean(PrefKeys.NOTIFICATION_NAG, false);
@@ -1059,10 +1061,11 @@ public final class PlaybackService extends Service
 
     private void processNewState(int oldState, int state) {
         int toggled = oldState ^ state;
+        Log.i("ttt","a");
 
         if (((toggled & FLAG_PLAYING) != 0) && mCurrentSong != null) { // user requested to start playback AND we have a song selected
             if ((state & FLAG_PLAYING) != 0) {
-
+                Log.i("ttt","b");
                 // We get noisy: Acquire a new AudioFX session if required
                 if (mMediaPlayerAudioFxActive == false) {
                     mMediaPlayer.openAudioFx();
@@ -1071,8 +1074,9 @@ public final class PlaybackService extends Service
 
                 if (mMediaPlayerInitialized)
                     mMediaPlayer.start();
-
+                Log.i("ttt",""+mNotificationMode);
                 if (mNotificationMode != NEVER) {
+                    Log.i("ttt","c");
                     startForeground(NOTIFICATION_ID, createNotification(mCurrentSong, mState));
 //					createForeNotification();
                 }
@@ -1087,11 +1091,12 @@ public final class PlaybackService extends Service
                     // Don't have WAKE_LOCK permission
                 }
             } else {
+                Log.i("ttt","d");
                 if (mMediaPlayerInitialized)
                     mMediaPlayer.pause();
 
                 if (mNotificationMode == ALWAYS || mForceNotificationVisible) {
-                    Log.i("ttt","stop false");
+                    Log.i("ttt", "stop false");
 					stopForeground(false);
                     mNotificationManager.notify(NOTIFICATION_ID, createNotification(mCurrentSong, mState));
                 } else {
