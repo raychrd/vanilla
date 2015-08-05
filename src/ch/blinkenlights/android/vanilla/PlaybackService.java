@@ -533,7 +533,7 @@ public final class PlaybackService extends Service
                 Date date = new Date(System.currentTimeMillis());
                 NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                 if (mEnableChime) {
-                    if (date.getMinutes() == 44 && date.getSeconds() == 0) {
+                    if (date.getMinutes() == 30 && date.getSeconds() == 0) {
 
                         //beep
                         volumeSlowlyDown(true);
